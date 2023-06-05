@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26">
+    <g id="chevron-right" transform="translate(-378 -400)">
+        <rect id="Rectangle_1" data-name="Rectangle 1" width="26" height="26" transform="translate(378 400)"
+              fill="none"/>
+        <path id="chevron-right-2" data-name="chevron-right"
+              d="M16,13,9.5,19.5,3,26,.563,23.563,11.125,13,.563,2.438,3,0Z" transform="translate(382.719 400)"
+              fill="currentColor"/>
+    </g>
+</svg>
