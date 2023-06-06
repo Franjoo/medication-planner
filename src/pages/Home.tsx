@@ -1,6 +1,7 @@
-import { H1 } from "../components/utilities/Typography";
+import { H1 } from "../components/atoms/Typography";
 import DateRangeSelectionGroup from "../components/groups/DateRangeSelectionGroup";
 import Divider from "../components/atoms/Divider";
+import ObservedWeeklyScheduleContainer from "../components/container/WeeklyScheduleContainer";
 
 const Home = () => {
   // onNavigateToNext: () => void;
@@ -12,6 +13,7 @@ const Home = () => {
   const onNavigateToNext = () => console.log("foo");
   const navigateToPreviousDisabled = true;
   const navigateToNextDisabled = false;
+  const dayRangeCount = 2;
 
   return (
     <div className="p-12">
@@ -23,7 +25,18 @@ const Home = () => {
         navigateToNextDisabled={navigateToNextDisabled}
         dayRangeCount={2}
       />
+
+      {/*<DateRangeSelectionGroup*/}
+      {/*  {...{*/}
+      {/*    onNavigateToPrevious,*/}
+      {/*    onNavigateToNext,*/}
+      {/*    navigateToPreviousDisabled,*/}
+      {/*    navigateToNextDisabled,*/}
+      {/*    dayRangeCount,*/}
+      {/*  }}*/}
+      {/*/>*/}
       <Divider />
+      <ObservedWeeklyScheduleContainer />
     </div>
   );
 };

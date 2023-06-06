@@ -1,10 +1,10 @@
 import { createContext } from "react";
-import { UiStore } from "./UiStore";
+import { ScheduleStore } from "./ScheduleStore";
 
-const ui: UiStore = new UiStore();
+const schedule: ScheduleStore = new ScheduleStore();
 
 const stores = {
-  ui,
+  schedule,
 };
 
 export const StoreContext = createContext(stores);

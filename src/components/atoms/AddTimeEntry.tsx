@@ -1,0 +1,18 @@
+import { B } from "./Typography";
+
+interface Props {
+  onClick: () => void;
+}
+
+const AddTimeEntry = ({ onClick }: Props) => {
+  return (
+    <div
+      className="mb-3 flex h-cell w-cell cursor-pointer items-center justify-center border-1 border-black bg-[#5C5C5C]"
+      onClick={onClick}
+    >
+      <B className="flex items-center justify-center text-white">Add Time</B>
+    </div>
+  );
+};
+
+export default AddTimeEntry;
