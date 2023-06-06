@@ -1,12 +1,16 @@
+import { B } from "./Typography";
+
 interface Props {
-  dayRangeCount: number
+  dayRangeCount: number;
 }
 
 const DateRangeDisplay = ({ dayRangeCount }: Props) => {
   return (
     <div className="flex flex-col items-center">
-      <div className="py-3">&nbsp;</div>
-      <div className="py-3">{dayRangeCount}</div>
+      <B className="pb-3">&nbsp;</B>
+      <B className="flex min-h-[48px] items-center justify-center">
+        {dayRangeCount} days
+      </B>
     </div>
   );
 };

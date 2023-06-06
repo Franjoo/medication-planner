@@ -18,7 +18,7 @@ const DayNavigation = ({
   return (
     <div className="flex flex-col items-center">
       <div className="py-3">&nbsp;</div>
-      <div className="flex grow items-center">
+      <div className="flex grow items-end">
         {/* todo touch areas*/}
         <IconChevronLeft
           className={clsx({ "opacity-30": previousDisabled })}

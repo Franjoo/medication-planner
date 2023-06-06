@@ -19,11 +19,23 @@ const fontStyles = (props: ITypography) => {
 export const H1: FC<ITypography> = (props) => (
   <h1
     className={clsx(
-      "font-inter text-2xl font-semibold text-black",
+      "mb-11 font-inter text-2xl font-semibold text-black",
       fontStyles(props),
       props.style
     )}
   >
     {props.children}
   </h1>
+);
+
+export const B: FC<ITypography> = (props) => (
+  <p
+    className={clsx(
+      "font-inter text-lg text-black",
+      fontStyles(props),
+      props.style
+    )}
+  >
+    {props.children}
+  </p>
 );
