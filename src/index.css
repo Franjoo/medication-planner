@@ -9,3 +9,42 @@
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
 }
+
+input[type="time"]::-webkit-calendar-picker-indicator {
+  background: none;
+  display: none;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  background: none;
+  display: none;
+}
+
+::selection {
+  background: #ffb7b7;
+}
+
+*::selection {
+  background: #ffb7b7;
+}
+
+::-moz-selection {
+  background: #ffb7b7;
+}
+
+input:focus,
+textarea:focus {
+  outline: none !important;
+  border-color: #e11bb6;
+  /*color: white;*/
+  /*border-radius: 10px;*/
+  border-width: 1px;
+}
+
+input:focus::selection {
+  outline: none !important;
+  border-color: black;
+  /*color: white;*/
+  /*border-radius: 10px;*/
+  border-width: 1px;
+}
