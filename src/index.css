@@ -32,19 +32,30 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   background: #ffb7b7;
 }
 
+input {
+  pointer-events: none;
+}
+
 input:focus,
 textarea:focus {
   outline: none !important;
-  border-color: #e11bb6;
+  border-color: transparent;
   /*color: white;*/
   /*border-radius: 10px;*/
-  border-width: 1px;
+  /*border-width: 1px;*/
 }
 
 input:focus::selection {
   outline: none !important;
-  border-color: black;
+  border-color: transparent;
   /*color: white;*/
   /*border-radius: 10px;*/
-  border-width: 1px;
+  /*border-width: 1px;*/
+}
+
+input[type="date"]:not(:focus):in-range::-webkit-datetime-edit-year-field,
+input[type="date"]:not(:focus):in-range::-webkit-datetime-edit-month-field,
+input[type="date"]:not(:focus):in-range::-webkit-datetime-edit-day-field,
+input[type="date"]:not(:focus):in-range::-webkit-datetime-edit-text {
+  color: transparent;
 }
