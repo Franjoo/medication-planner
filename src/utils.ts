@@ -10,7 +10,7 @@ export const toGermanTimeString = (date: string | Date) =>
   format(new Date(date), "HH:mm"); // ISO 8601
 
 export const createEmptySchedule = (rangeStart: Date, rangeEnd: Date) => {
-  const daysCount = -differenceInDays(rangeStart, rangeEnd);
+  const daysCount = -differenceInDays(rangeStart, rangeEnd) + 1;
   const days: Day[] = [];
   for (let i = 0; i < daysCount; i++) {
     const date = addDays(rangeStart, i);

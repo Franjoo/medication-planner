@@ -9,6 +9,8 @@ interface Props {
   onNavigateToPrevious: () => void;
   navigateToNextDisabled: boolean;
   navigateToPreviousDisabled: boolean;
+  onStartChange: (value: string) => void;
+  onEndChange: (value: string) => void;
 }
 
 const DateRangeSelectionGroup = ({
@@ -17,13 +19,15 @@ const DateRangeSelectionGroup = ({
   onNavigateToNext,
   navigateToPreviousDisabled,
   navigateToNextDisabled,
+  onStartChange,
+  onEndChange,
 }: Props) => {
   return (
     <>
       <div className="flex justify-between">
         <div className="flex">
-          <DateInputCellGroup title="Start-Date" />
-          <DateInputCellGroup title="End-Date" />
+          <DateInputCellGroup title="Start-Date" onChange={onStartChange} />
+          <DateInputCellGroup title="End-Date" onChange={onEndChange} />
           <DateRangeDisplay dayRangeCount={dayRangeCount} />
         </div>
         <DayNavigation

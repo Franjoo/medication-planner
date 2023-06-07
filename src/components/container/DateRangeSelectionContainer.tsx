@@ -8,7 +8,13 @@ const DateRangeSelectionContainer = observer(() => {
   const onNavigateToNext = () => console.log("foo");
   const navigateToPreviousDisabled = true;
   const navigateToNextDisabled = false;
-  const dayRangeCount = 2;
+
+  const onStartChange = (value: string) => {
+    schedule.setRangeStart(new Date(value));
+  };
+  const onEndChange = (value: string) => {
+    schedule.setRangeEnd(new Date(value));
+  };
 
   return (
     <DateRangeSelectionGroup
@@ -16,7 +22,9 @@ const DateRangeSelectionContainer = observer(() => {
       onNavigateToNext={onNavigateToNext}
       navigateToPreviousDisabled={navigateToPreviousDisabled}
       navigateToNextDisabled={navigateToNextDisabled}
-      dayRangeCount={2}
+      dayRangeCount={schedule.daysCount}
+      onStartChange={onStartChange}
+      onEndChange={onEndChange}
     />
   );
 });
