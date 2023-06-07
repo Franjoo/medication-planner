@@ -2,10 +2,9 @@ import WeeklyScheduleTableGroup from "../groups/WeeklyScheduleTableGroup";
 import { useStore } from "../../hooks/useStores";
 import { observer } from "mobx-react";
 import { useEffect } from "react";
-import { toJS } from "mobx";
 import { Day } from "../../models";
 
-const WeeklyScheduleContainer = () => {
+const WeeklyScheduleContainer = observer(() => {
   const { schedule } = useStore();
 
   useEffect(() => {
@@ -26,7 +25,6 @@ const WeeklyScheduleContainer = () => {
   ) : (
     <></>
   );
-};
+});
 
-const ObservedWeeklyScheduleContainer = observer(WeeklyScheduleContainer);
-export default ObservedWeeklyScheduleContainer;
+export default WeeklyScheduleContainer;

@@ -1,6 +1,7 @@
-import DateSelector from "../atoms/DateSelector";
+import DateInputCellGroup from "./DateInputCellGroup";
 import DateRangeDisplay from "../atoms/DateRangeDisplay";
 import DayNavigation from "../atoms/DayNavigation";
+import Divider from "../atoms/Divider";
 
 interface Props {
   dayRangeCount: number;
@@ -18,19 +19,22 @@ const DateRangeSelectionGroup = ({
   navigateToNextDisabled,
 }: Props) => {
   return (
-    <div className="flex justify-between">
-      <div className="flex">
-        <DateSelector title="Start-Date" />
-        <DateSelector title="End-Date" />
-        <DateRangeDisplay dayRangeCount={dayRangeCount} />
+    <>
+      <div className="flex justify-between">
+        <div className="flex">
+          <DateInputCellGroup title="Start-Date" />
+          <DateInputCellGroup title="End-Date" />
+          <DateRangeDisplay dayRangeCount={dayRangeCount} />
+        </div>
+        <DayNavigation
+          onPreviousClick={onNavigateToPrevious}
+          onNextClick={onNavigateToNext}
+          previousDisabled={navigateToPreviousDisabled}
+          nextDisabled={navigateToNextDisabled}
+        />
       </div>
-      <DayNavigation
-        onPreviousClick={onNavigateToPrevious}
-        onNextClick={onNavigateToNext}
-        previousDisabled={navigateToPreviousDisabled}
-        nextDisabled={navigateToNextDisabled}
-      />
-    </div>
+      <Divider />
+    </>
   );
 };
 

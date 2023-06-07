@@ -1,5 +1,5 @@
 import { Day } from "../../models";
-import TimeEntry from "../atoms/TimeEntry";
+import TimeInputCellGroup from "./TimeInputCellGroup";
 import { B } from "../atoms/Typography";
 import { toGermanDateString } from "../../utils";
 import AddTimeEntry from "../atoms/AddTimeEntry";
@@ -32,10 +32,11 @@ const ScheduleTableItemGroup = ({
         onMouseLeave={() => setHovered(false)}
       >
         {day.times.map((value, index) => (
-          <TimeEntry
+          <TimeInputCellGroup
             key={index}
             time={value}
             onRemoveClick={() => onRemoveEntryClick(day)}
+            onEnterUp={() => onAddEntryClick(day)}
           />
         ))}
         {/* todo check which type to use */}
