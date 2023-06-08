@@ -1,31 +1,19 @@
 import { format } from "date-fns";
 import differenceInDays from "date-fns/differenceInDays";
 import addDays from "date-fns/addDays";
-import { Day, Schedule } from "./models";
+import { Day } from "./models";
 
-export const toGermanDateString = (date: string | Date) =>
-  format(new Date(date), "dd.MM.yyyy"); // ISO 8601
+export const toGermanDateString = (date: Date) => format(date, "dd.MM.yyyy"); // ISO 8601
+export const toIsoDateString = (date: Date) => format(date, "yyyy-MM-dd"); // ISO 8601
 
-export const toGermanTimeString = (date: string | Date) =>
-  format(new Date(date), "HH:mm"); // ISO 8601
+export const toTimeString = (date: Date) => format(date, "HH:mm");
 
-export const createEmptySchedule = (rangeStart: Date, rangeEnd: Date) => {
-  const daysCount = -differenceInDays(rangeStart, rangeEnd) + 1;
-  const days: Day[] = [];
-  for (let i = 0; i < daysCount; i++) {
-    const date = addDays(rangeStart, i);
-    days.push({
-      date: date,
-      weekday: format(date, "EEEE"),
-      times: [],
-    });
-  }
+export const last = <T>(array: T[]) => {
+  if (!array.length) return;
+  return array[array.length - 1];
+};
 
-  const schedule: Schedule = {
-    startDate: rangeStart.toString(),
-    endDate: rangeEnd.toString(),
-    days,
-  };
-
-  return schedule;
+export const first = <T>(array: T[]) => {
+  if (!array.length) return;
+  return array[0];
 };
