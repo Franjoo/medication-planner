@@ -4,6 +4,11 @@ module.exports = {
     fontFamily: {
       inter: ["\"Inter\"", "sans-serif"]
     }, extend: {
+      colors: {
+        "pink": "#E11BB6",
+        "dark-grey": "#303030",
+        "light-grey": "#ACACAC"
+      },
       borderWidth:{
         "1": "1px"
       },

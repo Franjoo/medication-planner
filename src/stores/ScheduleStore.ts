@@ -18,6 +18,7 @@ export class ScheduleStore {
 
   private DAYS_TO_DISPLAY = 7;
   private index = 0;
+  private autoCompleted = false;
 
   constructor() {
     makeAutoObservable(this);
@@ -76,11 +77,38 @@ export class ScheduleStore {
     return shifted;
   }
 
+  resetTimesAndAutoComplete() {
+    if (!this.rangeStart || !this.rangeEnd) return;
+    this.days = this.createEmptyDays(this.rangeStart, this.rangeEnd);
+    this.autoCompleted = false;
+  }
+
+  get resetEnabled() {
+    return (
+      this.days.length > 0 &&
+      !!this.days.find((value) => value.times.length > 0)
+    );
+  }
+
+  get uploadEnabled() {
+    return (
+      this.days.length > 0 &&
+      !this.days.find((value) => value.times.length === 0)
+    );
+  }
+
+  get autoCompleteEnabled() {
+    return (
+      this.days.length > 0 &&
+      !this.autoCompleted &&
+      !!this.days.find((value) => value.times.length === 0) &&
+      !!this.days.find((value) => value.times.length > 0)
+    );
+  }
+
   updateSchedule() {
     if (!this.rangeStart || !this.rangeEnd) return;
-    if (!this.days.length) {
-      this.days = this.createEmptyDays(this.rangeStart, this.rangeEnd);
-    }
+    if (!this.days.length) this.resetTimesAndAutoComplete();
 
     const oldLength = this.days.length;
     const newLength = -differenceInDays(this.rangeStart, this.rangeEnd) + 1;
