@@ -10,17 +10,23 @@ interface Props {
   day: Day;
   onAddEntryClick: (day: Day) => void;
   onRemoveEntryClick: (day: Day) => void;
+  isPlaceHolder?: boolean;
 }
 
 const ScheduleTableItemGroup = ({
   day,
   onAddEntryClick,
   onRemoveEntryClick,
+  isPlaceHolder = false,
 }: Props) => {
   const [hovered, setHovered] = useState(false);
 
   return (
-    <div className="text-center">
+    <div
+      className={clsx("text-center", {
+        "pointer-none opacity-0": isPlaceHolder,
+      })}
+    >
       <B bold>{day.weekday}</B>
       <B>{toGermanDateString(day.date)}</B>
       <div
