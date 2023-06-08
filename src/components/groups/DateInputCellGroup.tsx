@@ -27,10 +27,6 @@ const DateInputCellGroup = ({
   const showPicker = () => {
     const input = ref?.current;
     if (!input) return;
-    if (!input.value) {
-      input.value = format(new Date(), "yyyy-MM-dd");
-      onChange(input.value);
-    }
     input.showPicker();
   };
 
@@ -39,9 +35,10 @@ const DateInputCellGroup = ({
 
   useEffect(() => {
     const input = ref?.current;
-    if (!input || !value) return;
-    input.value = format(value, "yyyy-MM-dd");
-  }, [currentValue, value]);
+    if (!input) return;
+    if (!value || !minValue) return;
+    input.value = format(value ?? minValue, "yyyy-MM-dd");
+  }, [currentValue, value, minValue]);
 
   return (
     <label className="mr-3 block text-center">

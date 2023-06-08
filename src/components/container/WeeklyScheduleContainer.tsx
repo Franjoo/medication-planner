@@ -9,9 +9,9 @@ const WeeklyScheduleContainer = observer(() => {
   const onAddEntryClick = (day: Day) => schedule.addTimeEntry(day.date);
   const onRemoveEntryClick = (day: Day) => schedule.removeTimeEntry(day.date);
 
-  return schedule.days ? (
+  return schedule.displayDays ? (
     <WeeklyScheduleTableGroup
-      days={schedule.days}
+      days={schedule.displayDays}
       onAddEntryClick={onAddEntryClick}
       onRemoveEntryClick={onRemoveEntryClick}
     />

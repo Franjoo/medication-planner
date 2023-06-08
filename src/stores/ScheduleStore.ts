@@ -16,29 +16,54 @@ export class ScheduleStore {
   rangeEnd?: Date;
   days: Day[] = [];
 
+  private DAYS_TO_DISPLAY = 7;
+  private index = 0;
+
   constructor() {
     makeAutoObservable(this);
     this.initReactions();
   }
 
   setRangeStart(start: Date) {
-    runInAction(() => {
-      if (this.rangeEnd && this.rangeStart) {
-        this.rangeEnd = addDays(
-          this.rangeEnd,
-          differenceInDays(start, this.rangeStart)
-        );
-      }
-      this.rangeStart = start;
-    });
+    if (this.rangeEnd && this.rangeStart) {
+      this.rangeEnd = addDays(
+        this.rangeEnd,
+        differenceInDays(start, this.rangeStart)
+      );
+    }
+    this.rangeStart = start;
   }
 
   setRangeEnd(end: Date) {
+    if (this.rangeStart && isBefore(end, this.rangeStart)) return;
     this.rangeEnd = end;
   }
 
   get daysCount() {
     return this.days?.length || 0;
+  }
+
+  get displayDays() {
+    return this.days.slice(this.index, this.index + this.DAYS_TO_DISPLAY);
+  }
+
+  get canGoForward() {
+    return this.days.length - this.index > this.DAYS_TO_DISPLAY;
+  }
+
+  get canGoBackward() {
+    return this.index > 0;
+  }
+
+  next() {
+    this.index = Math.min(
+      this.index + this.DAYS_TO_DISPLAY,
+      this.days.length - this.DAYS_TO_DISPLAY
+    );
+  }
+
+  previous() {
+    this.index = Math.max(0, this.index - this.DAYS_TO_DISPLAY);
   }
 
   toShifted(days: Day[], numDays: number) {

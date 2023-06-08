@@ -5,15 +5,15 @@ import clsx from "clsx";
 interface Props {
   onPreviousClick: () => void;
   onNextClick: () => void;
-  previousDisabled: boolean;
-  nextDisabled: boolean;
+  previousEnabled: boolean;
+  nextEnabled: boolean;
 }
 
 const DayNavigation = ({
   onPreviousClick,
   onNextClick,
-  previousDisabled,
-  nextDisabled,
+  previousEnabled,
+  nextEnabled,
 }: Props) => {
   return (
     <div className="flex flex-col items-center">
@@ -21,11 +21,11 @@ const DayNavigation = ({
       <div className="flex grow items-end">
         {/* todo touch areas*/}
         <IconChevronLeft
-          className={clsx({ "opacity-30": previousDisabled })}
+          className={clsx({ "opacity-30": !previousEnabled })}
           onClick={onPreviousClick}
         />
         <IconChevronRight
-          className={clsx({ "opacity-30": nextDisabled })}
+          className={clsx({ "opacity-30": !nextEnabled })}
           onClick={onNextClick}
         />
       </div>

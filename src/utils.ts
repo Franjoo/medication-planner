@@ -17,3 +17,7 @@ export const first = <T>(array: T[]) => {
   if (!array.length) return;
   return array[0];
 };
+
+export const clamp = (value: number, min: number, max: number) => {
+  return Math.max(min, Math.min(value, max));
+};

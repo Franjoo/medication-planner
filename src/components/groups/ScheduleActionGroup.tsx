@@ -27,8 +27,8 @@ const ScheduleActionGroup = ({
       <DayNavigation
         onPreviousClick={onNavigateToPrevious}
         onNextClick={onNavigateToNext}
-        previousDisabled={navigateToPreviousDisabled}
-        nextDisabled={navigateToNextDisabled}
+        previousEnabled={navigateToPreviousDisabled}
+        nextEnabled={navigateToNextDisabled}
       />
     </div>
   );

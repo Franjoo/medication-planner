@@ -7,8 +7,8 @@ interface Props {
   dayRangeCount: number;
   onNextClick: () => void;
   onPreviousClick: () => void;
-  previousDisabled: boolean;
-  nextDisabled: boolean;
+  previousEnabled: boolean;
+  nextEnabled: boolean;
   onStartChange: (value: string) => void;
   onEndChange: (value: string) => void;
   start?: Date;
@@ -20,8 +20,8 @@ const DateRangeSelectionGroup = ({
   dayRangeCount,
   onPreviousClick,
   onNextClick,
-  previousDisabled,
-  nextDisabled,
+  previousEnabled,
+  nextEnabled,
   onStartChange,
   onEndChange,
   start,
@@ -49,8 +49,8 @@ const DateRangeSelectionGroup = ({
           {...{
             onNextClick,
             onPreviousClick,
-            previousDisabled,
-            nextDisabled,
+            previousEnabled,
+            nextEnabled,
           }}
 
           // onPreviousClick={onNavigateToPrevious}
