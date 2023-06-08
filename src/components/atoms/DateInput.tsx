@@ -4,11 +4,12 @@ interface Props {
   defaultValue?: string;
   onChange: (value: string) => void;
   minValue?: string;
-  // ref: React.MutableRefObject<HTMLInputElement | null>;
+  maxValue?: string;
+  value?: string;
 }
 
 const DateInput = forwardRef<HTMLInputElement | null, Props>(
-  ({ defaultValue, onChange, minValue }: Props, ref) => {
+  ({ defaultValue, onChange, minValue, maxValue, value }: Props, ref) => {
     const onValueChange = (event: ChangeEvent<HTMLInputElement> | string) => {
       if (typeof event === "string") return onChange(event);
       onChange(event.target.value);
@@ -20,7 +21,7 @@ const DateInput = forwardRef<HTMLInputElement | null, Props>(
         onChange={onValueChange}
         type="date"
         min={minValue}
-        // max="23:59"
+        max={maxValue}
         className="themed-selection-color pointer-events-none select-none text-center"
         // unselectable="on"
       />

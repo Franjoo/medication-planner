@@ -1,95 +1,134 @@
 import { makeAutoObservable, reaction, runInAction } from "mobx";
-import { Schedule } from "../models";
-import {
-  createEmptySchedule,
-  toGermanDateString,
-  toGermanTimeString,
-} from "../utils";
+import { Day } from "../models";
+
+import isSameDay from "date-fns/isSameDay";
+
 import differenceInDays from "date-fns/differenceInDays";
+import addDays from "date-fns/addDays";
+import subDays from "date-fns/subDays";
+import isBefore from "date-fns/isBefore";
+import { format } from "date-fns";
 
 export class ScheduleStore {
   // todo why here class?
 
-  private rangeStart?: Date;
-  private rangeEnd?: Date;
-  private currentSchedule?: Schedule;
+  rangeStart?: Date;
+  rangeEnd?: Date;
+  days: Day[] = [];
 
   constructor() {
     makeAutoObservable(this);
-    // this.initReactions();
+    this.initReactions();
   }
 
   setRangeStart(start: Date) {
-    console.log("setRangeStart", start);
-    runInAction(() => (this.rangeStart = start));
-  }
-
-  setRangeEnd(end: Date) {
-    console.log("setRangeEnd", end);
     runInAction(() => {
-      this.rangeEnd = end;
+      if (this.rangeEnd && this.rangeStart) {
+        this.rangeEnd = addDays(
+          this.rangeEnd,
+          differenceInDays(start, this.rangeStart)
+        );
+      }
+      this.rangeStart = start;
     });
   }
 
+  setRangeEnd(end: Date) {
+    this.rangeEnd = end;
+  }
+
   get daysCount() {
-    if (!this.currentSchedule) return 0;
-    return this.currentSchedule.days.length;
+    return this.days?.length || 0;
   }
 
-  get schedule() {
-    this.updateSchedule();
-    return this.currentSchedule;
-  }
-
-  createNewSchedule() {
-    if (!this.rangeStart || !this.rangeEnd) return;
-    this.currentSchedule = createEmptySchedule(this.rangeStart, this.rangeEnd);
+  toShifted(days: Day[], numDays: number) {
+    const shifted = [...days];
+    shifted.forEach((dayDate) => {
+      dayDate.date = subDays(dayDate.date, numDays);
+      dayDate.weekday = this.weekday(dayDate.date);
+      dayDate.times.map((timeDate) => subDays(timeDate, numDays));
+    });
+    return shifted;
   }
 
   updateSchedule() {
     if (!this.rangeStart || !this.rangeEnd) return;
-    if (!this.currentSchedule) return this.createNewSchedule();
+    if (!this.days.length) {
+      this.days = this.createEmptyDays(this.rangeStart, this.rangeEnd);
+    }
 
-    const oldLength = this.currentSchedule.days.length;
+    const oldLength = this.days.length;
     const newLength = -differenceInDays(this.rangeStart, this.rangeEnd) + 1;
+    const lengthDiff = Math.abs(newLength - oldLength);
+    const firstDayElement = this.days[0];
+    const lastDayElement = this.days[this.days.length - 1];
 
-    console.log("old", oldLength, "new", newLength);
-    if (newLength > oldLength) {
-      const newSchedule = createEmptySchedule(this.rangeStart, this.rangeEnd);
-      newSchedule.days.splice(0, oldLength, ...this.currentSchedule.days);
-      runInAction(() => {
-        this.currentSchedule = newSchedule;
-      });
+    if (this.rangeStart.getTime() != firstDayElement.date.getTime()) {
+      const diff = -differenceInDays(this.rangeStart, firstDayElement.date);
+      this.days = this.toShifted(this.days, diff);
+    } else {
+      if (isBefore(this.rangeEnd, lastDayElement.date)) {
+        this.days = this.days.slice(0, newLength);
+      } else {
+        this.days = this.days.concat(
+          ...this.createEmptyDays(
+            addDays(lastDayElement.date, 1),
+            addDays(lastDayElement.date, lengthDiff)
+          )
+        );
+      }
     }
   }
 
-  addEntry(date: Date) {
-    if (!this.currentSchedule) return;
-    const day = this.currentSchedule.days.find(
-      // todo 3 === ???
-      (value) => toGermanDateString(value.date) == toGermanDateString(date)
+  addTimeEntry(date: Date) {
+    if (!this.days) return;
+    const dayToUpdateIndex = this.days.findIndex((day) =>
+      isSameDay(day.date, date)
     );
-    day?.times.push(toGermanTimeString(date));
-    this.currentSchedule = Object.assign({}, this.currentSchedule);
+    if (dayToUpdateIndex == -1) return;
+    const updatedDays = [...this.days];
+    updatedDays[dayToUpdateIndex].times.push(date);
+    this.days = updatedDays;
   }
 
-  removeEntry(date: Date) {
-    if (!this.currentSchedule) return;
-    const day = this.currentSchedule.days.find(
-      (value) => toGermanDateString(value.date) == toGermanDateString(date)
+  removeTimeEntry(date: Date) {
+    if (!this.days) return;
+    const dayToUpdateIndex = this.days.findIndex((day) =>
+      isSameDay(day.date, date)
     );
-    if (!day) return;
-
-    const time = toGermanTimeString(date);
-    const removeIndex = day.times.findIndex((value) => value == time);
-    day.times.splice(removeIndex, 1);
-    this.currentSchedule = Object.assign({}, this.currentSchedule);
+    if (dayToUpdateIndex == -1) return;
+    const updatedDays = [...this.days];
+    const timeToRemoveIndex = updatedDays[dayToUpdateIndex].times.findIndex(
+      (time) => time.getTime() === date.getTime()
+    );
+    if (timeToRemoveIndex == -1) return;
+    updatedDays[dayToUpdateIndex].times.splice(timeToRemoveIndex, 1);
+    this.days = updatedDays;
   }
 
-  // initReactions() {
-  //   reaction(
-  //     () => [this.rangeStart, this.rangeEnd],
-  //     () => this.updateSchedule()
-  //   );
-  // }
+  createEmptyDays(startDate: Date, endDate: Date) {
+    const daysCount = -differenceInDays(startDate, endDate) + 1;
+    const days: Day[] = [];
+    for (let i = 0; i < daysCount; i++) {
+      const date = addDays(startDate, i);
+      days.push({
+        date: date,
+        weekday: format(date, "EEEE"),
+        times: [],
+      });
+    }
+
+    return days;
+  }
+
+  weekday(date: Date) {
+    return format(date, "EEEE");
+  }
+
+  initReactions() {
+    reaction(
+      () => [this.rangeStart, this.rangeEnd],
+      () => this.updateSchedule()
+    );
+  }
 }

@@ -1,13 +1,14 @@
 import { useStore } from "../../hooks/useStores";
 import { observer } from "mobx-react";
 import DateRangeSelectionGroup from "../groups/DateRangeSelectionGroup";
+import { first, last } from "../../utils";
 
 const DateRangeSelectionContainer = observer(() => {
   const { schedule } = useStore();
   const onNavigateToPrevious = () => console.log("bar");
   const onNavigateToNext = () => console.log("foo");
-  const navigateToPreviousDisabled = true;
-  const navigateToNextDisabled = false;
+  const previousDisabled = true;
+  const nextDisabled = false;
 
   const onStartChange = (value: string) => {
     schedule.setRangeStart(new Date(value));
@@ -16,15 +17,22 @@ const DateRangeSelectionContainer = observer(() => {
     schedule.setRangeEnd(new Date(value));
   };
 
+  const minEnd = schedule.rangeStart;
+  const start = schedule.rangeStart;
+  const end = schedule.rangeEnd;
+
   return (
     <DateRangeSelectionGroup
-      onNavigateToPrevious={onNavigateToPrevious}
-      onNavigateToNext={onNavigateToNext}
-      navigateToPreviousDisabled={navigateToPreviousDisabled}
-      navigateToNextDisabled={navigateToNextDisabled}
+      onPreviousClick={onNavigateToPrevious}
+      onNextClick={onNavigateToNext}
+      previousDisabled={previousDisabled}
+      nextDisabled={nextDisabled}
       dayRangeCount={schedule.daysCount}
       onStartChange={onStartChange}
       onEndChange={onEndChange}
+      start={start}
+      end={end}
+      minEnd={minEnd}
     />
   );
 });

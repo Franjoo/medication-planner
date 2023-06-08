@@ -6,7 +6,7 @@ import Spacer from "../atoms/Spacer";
 import Cell from "../atoms/Cell";
 
 interface Props {
-  time: string;
+  time: Date;
   onRemoveClick: () => void;
   onEnterUp: () => void;
 }

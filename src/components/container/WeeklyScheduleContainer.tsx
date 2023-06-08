@@ -6,13 +6,12 @@ import { Day } from "../../models";
 const WeeklyScheduleContainer = observer(() => {
   const { schedule } = useStore();
 
-  const onAddEntryClick = (day: Day) => schedule.addEntry(new Date(day.date));
-  const onRemoveEntryClick = (day: Day) =>
-    schedule.removeEntry(new Date(day.date));
+  const onAddEntryClick = (day: Day) => schedule.addTimeEntry(day.date);
+  const onRemoveEntryClick = (day: Day) => schedule.removeTimeEntry(day.date);
 
-  return schedule.schedule ? (
+  return schedule.days ? (
     <WeeklyScheduleTableGroup
-      schedule={schedule.schedule}
+      days={schedule.days}
       onAddEntryClick={onAddEntryClick}
       onRemoveEntryClick={onRemoveEntryClick}
     />

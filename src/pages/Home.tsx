@@ -1,7 +1,6 @@
 import WeeklyScheduleContainer from "../components/container/WeeklyScheduleContainer";
 import DateRangeSelectionContainer from "../components/container/DateRangeSelectionContainer";
 import Page from "../components/groups/Page";
-import ScheduleActionContainer from "../components/container/ScheduleActionContainer";
 
 const Home = () => {
   return (
