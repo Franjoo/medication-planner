@@ -27,7 +27,7 @@ export const lerp = (start: number, end: number, progress: number): number => {
   return start + (end - start) * progress;
 };
 
-export const weekday = (date: Date) => {
+export const weekday = (date: Date | number) => {
   return format(date, "EEEE");
 };
 
@@ -35,6 +35,6 @@ export const localDate = (date: Date) => {
   return new Date(date.toISOString().slice(0, -1));
 };
 
-export const localTimeString = (date: Date) => {
+export const localTimeString = (date: Date | number) => {
   return format(date, "yyyy-MM-dd'T'HH:mm:ss.sss");
 };

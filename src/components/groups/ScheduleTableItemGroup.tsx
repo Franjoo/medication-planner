@@ -8,9 +8,9 @@ import clsx from "clsx";
 
 interface Props {
   day: Day;
-  onChange: (day: Day, timeIndex: number, newValue: string) => void;
-  onAddEntryClick: (day: Day) => void;
-  onRemoveEntryClick: (day: Day) => void;
+  onChange: (timeIndex: number, newValue: string) => void;
+  onAddEntryClick: () => void;
+  onRemoveEntryClick: (timeIndex: number) => void;
   isPlaceHolder?: boolean;
 }
 
@@ -30,7 +30,7 @@ const ScheduleTableItemGroup = ({
       })}
     >
       <B bold>{day.weekday}</B>
-      <B>{toGermanDateString(day.date)}</B>
+      <B>{toGermanDateString(new Date(day.date))}</B>
       <div
         className={clsx(
           "mt-4 flex h-day w-cell flex-col [&>*:last-child]:mb-0 ",
@@ -41,16 +41,16 @@ const ScheduleTableItemGroup = ({
       >
         {day.times.map((value, index) => (
           <TimeInputCellGroup
-            onChange={(time: string) => onChange(day, index, time)}
+            onChange={(time: string) => onChange(index, time)}
             key={index}
             value={value}
-            onRemoveClick={() => onRemoveEntryClick(day)}
-            onEnterUp={() => onAddEntryClick(day)}
+            onRemoveTimeClick={() => onRemoveEntryClick(index)}
+            onAddTimeClick={() => onAddEntryClick()}
           />
         ))}
         {/* todo check which type to use */}
         {hovered && day.times.length < 5 && (
-          <AddTimeEntry onClick={() => onAddEntryClick(day)} />
+          <AddTimeEntry onClick={() => onAddEntryClick()} />
         )}
       </div>
     </div>

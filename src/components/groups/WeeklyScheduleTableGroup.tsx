@@ -6,9 +6,9 @@ interface Props {
   days?: Day[];
   templateDays?: Day[];
   showTemplates: boolean;
-  onAddEntryClick: (day: Day) => void;
-  onRemoveEntryClick: (day: Day) => void;
-  onTimeChange: (day: Day, timeIndex: number, newValue: string) => void;
+  onAddEntryClick: (dayIndex: number) => void;
+  onRemoveEntryClick: (dayIndex: number, timeIndex: number) => void;
+  onTimeChange: (dayIndex: number, timeIndex: number, time: string) => void;
 }
 
 const WeeklyScheduleTableGroup = ({
@@ -25,8 +25,10 @@ const WeeklyScheduleTableGroup = ({
       {!days ||
         (days.length === 0 && (
           <ScheduleTableItemGroup
-            day={{ weekday: "template", times: [], date: new Date() }}
-            onChange={onTimeChange}
+            day={{ weekday: "template", times: [], date: 0 }}
+            onChange={(timeIndex: number, time: string) =>
+              onTimeChange(0, timeIndex, time)
+            }
             onAddEntryClick={noop}
             onRemoveEntryClick={noop}
             isPlaceHolder
@@ -37,10 +39,14 @@ const WeeklyScheduleTableGroup = ({
         days?.map((day, index) => (
           <ScheduleTableItemGroup
             key={index}
-            onChange={onTimeChange}
+            onChange={(timeIndex: number, time: string) =>
+              onTimeChange(index, timeIndex, time)
+            }
             day={day}
-            onAddEntryClick={onAddEntryClick}
-            onRemoveEntryClick={onRemoveEntryClick}
+            onAddEntryClick={() => onAddEntryClick(index)}
+            onRemoveEntryClick={(timeIndex: number) =>
+              onRemoveEntryClick(index, timeIndex)
+            }
           />
         ))}
       {/* template days */}
@@ -48,10 +54,14 @@ const WeeklyScheduleTableGroup = ({
         templateDays?.map((templateDay, index) => (
           <ScheduleTableItemGroup
             key={index}
-            onChange={onTimeChange}
+            onChange={(timeIndex: number, time: string) =>
+              onTimeChange(index, timeIndex, time)
+            }
             day={templateDay}
-            onAddEntryClick={onAddEntryClick}
-            onRemoveEntryClick={onRemoveEntryClick}
+            onAddEntryClick={() => onAddEntryClick(index)}
+            onRemoveEntryClick={(timeIndex: number) =>
+              onRemoveEntryClick(index, timeIndex)
+            }
           />
         ))}
     </div>

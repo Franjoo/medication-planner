@@ -7,17 +7,17 @@ import Cell from "../atoms/Cell";
 import { format } from "date-fns";
 
 interface Props {
-  value: Date;
+  value: string;
   onChange: (value: string) => void;
-  onRemoveClick: () => void;
-  onEnterUp: () => void;
+  onRemoveTimeClick: () => void;
+  onAddTimeClick: (time: string) => void;
 }
 
 const TimeInputCellGroup = ({
   value,
   onChange,
-  onRemoveClick,
-  onEnterUp,
+  onRemoveTimeClick,
+  onAddTimeClick,
 }: Props) => {
   const [hovered, setHovered] = useState(false);
   const ref = useRef<HTMLInputElement | null>(null);
@@ -25,9 +25,14 @@ const TimeInputCellGroup = ({
   useEffect(() => {
     const input = ref?.current;
     if (!input) return;
-    console.log("value", format(value, "HH:mm"));
-    input.value = format(value, "HH:mm");
-  }, [value]);
+    input.value = value;
+  }, [ref, value]);
+
+  const onAddClick = () => {
+    const input = ref?.current;
+    if (!input) return;
+    onAddTimeClick(input.value);
+  };
 
   return (
     <Cell
@@ -36,7 +41,7 @@ const TimeInputCellGroup = ({
       className="mb-3"
     >
       <Spacer className="mx-2.5" width={30} />
-      <TimeInput onEnterUp={onEnterUp} onChange={onChange} />
+      <TimeInput onEnterPressed={onAddClick} onChange={onChange} ref={ref} />
       <IconDelete
         className={clsx(
           "pointer-events-none mx-2.5 opacity-0",
@@ -45,7 +50,7 @@ const TimeInputCellGroup = ({
             : "pointer-events-none opacity-0"
         )}
         width={30}
-        onClick={onRemoveClick}
+        onClick={onRemoveTimeClick}
       />
     </Cell>
   );

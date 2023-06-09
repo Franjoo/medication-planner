@@ -2,13 +2,13 @@ import React, { ChangeEvent, forwardRef } from "react";
 
 interface Props {
   onChange: (value: string) => void;
-  onEnterUp?: () => void;
+  onEnterPressed?: () => void;
 }
 
 const TimeInput = forwardRef<HTMLInputElement | null, Props>(
-  ({ onChange, onEnterUp }: Props, ref) => {
+  ({ onChange, onEnterPressed }: Props, ref) => {
     const onKeyUp = (event: React.KeyboardEvent<HTMLInputElement>) => {
-      if (event.key === "Enter") onEnterUp?.();
+      if (event.key === "Enter") onEnterPressed?.();
     };
     const onValueChange = (event: ChangeEvent<HTMLInputElement>) => {
       console.log("on change", event.target.value);
@@ -20,7 +20,6 @@ const TimeInput = forwardRef<HTMLInputElement | null, Props>(
         ref={ref}
         onChange={onValueChange}
         type="time"
-        defaultValue="06:00"
         min="00:00"
         max="23:59"
         className="themed-selection-color"

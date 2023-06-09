@@ -1,15 +1,12 @@
 import { makeAutoObservable, reaction } from "mobx";
 import { Day } from "../models";
 
-import isSameDay from "date-fns/isSameDay";
-
 import differenceInDays from "date-fns/differenceInDays";
 import addDays from "date-fns/addDays";
 import subDays from "date-fns/subDays";
 import isBefore from "date-fns/isBefore";
-import parse from "date-fns/parse";
 import { format } from "date-fns";
-import { localDate, localTimeString, weekday } from "../utils";
+import { localTimeString, weekday } from "../utils";
 
 export class ScheduleStore {
   rangeStart?: Date;
@@ -30,8 +27,8 @@ export class ScheduleStore {
   send() {
     if (!this.rangeStart || !this.rangeEnd) return;
     const data = JSON.stringify({
-      startDate: localTimeString(this.rangeStart),
-      rangeEnd: localTimeString(this.rangeEnd),
+      startDate: localTimeString(new Date(this.rangeStart)),
+      rangeEnd: localTimeString(new Date(this.rangeEnd)),
       days: this.days,
     });
     // API.postSchedule(data)
@@ -64,7 +61,7 @@ export class ScheduleStore {
     const firstDayElement = this.days[0];
     const lastDayElement = this.days[this.days.length - 1];
 
-    if (this.rangeStart.getTime() != firstDayElement.date.getTime()) {
+    if (this.rangeStart.getTime() != firstDayElement.date) {
       const diff = -differenceInDays(this.rangeStart, firstDayElement.date);
       this.days = this.toShifted(this.days, diff);
     } else {
@@ -79,32 +76,26 @@ export class ScheduleStore {
         );
       }
     }
+    // debugger;
+
+    console.log("updated days", this.days);
   }
 
-  addTimeEntry(date: Date) {
-    if (!this.days) return;
-    const dayToUpdateIndex = this.days.findIndex((day) =>
-      isSameDay(day.date, date)
-    );
-    if (dayToUpdateIndex == -1) return;
+  addTimeEntry(dayIndex: number) {
     const updatedDays = [...this.days];
-    updatedDays[dayToUpdateIndex].times.push(date);
+    updatedDays[dayIndex].times.push("08:00");
     this.days = updatedDays;
   }
 
-  removeTimeEntry(date: Date) {
-    if (!this.days) return;
-    const dayToUpdateIndex = this.days.findIndex((day) =>
-      isSameDay(day.date, date)
-    );
-    if (dayToUpdateIndex == -1) return;
+  removeTimeEntry(dayIndex: number, timeIndex: number) {
     const updatedDays = [...this.days];
-    const timeToRemoveIndex = updatedDays[dayToUpdateIndex].times.findIndex(
-      (time) => time.getTime() === date.getTime()
-    );
-    if (timeToRemoveIndex == -1) return;
-    updatedDays[dayToUpdateIndex].times.splice(timeToRemoveIndex, 1);
+    updatedDays[dayIndex].times.splice(timeIndex, 1);
     this.days = updatedDays;
+  }
+
+  updateTimeEntry(dayIndex: number, timeIndex: number, time: string) {
+    console.log("updateTimeEntry", dayIndex, timeIndex, time);
+    this.days[dayIndex].times[timeIndex] = time;
   }
 
   private createEmptyDays(startDate: Date, endDate: Date) {
@@ -113,12 +104,11 @@ export class ScheduleStore {
     for (let i = 0; i < daysCount; i++) {
       const date = addDays(startDate, i);
       days.push({
-        date: date,
+        date: date.getTime(),
         weekday: format(date, "EEEE"),
         times: [],
       });
     }
-
     return days;
   }
 
@@ -167,17 +157,6 @@ export class ScheduleStore {
     // // return [];
   }
 
-  updateTime(day: Day, timeIndex: number, newValue: string) {
-    const newDate = parse(newValue, "HH:mm", localDate(day.date));
-    console.log("new Date", newDate, timeIndex, new Date());
-    const dayToUpdateIndex = this.days.findIndex(
-      (value) => value.date.getTime() === day.date.getTime()
-    );
-    if (dayToUpdateIndex === -1) return;
-    this.days[dayToUpdateIndex].times[timeIndex].setTime(newDate.getTime());
-    console.log("this days", this.days);
-  }
-
   get canGoForward() {
     return this.days.length - this.index > this.DAYS_TO_DISPLAY;
   }
@@ -189,9 +168,9 @@ export class ScheduleStore {
   private toShifted(days: Day[], numDays: number) {
     const shifted = days.slice();
     shifted.forEach((dayDate) => {
-      dayDate.date = subDays(dayDate.date, numDays);
+      dayDate.date = subDays(dayDate.date, numDays).getTime();
       dayDate.weekday = weekday(dayDate.date);
-      dayDate.times.map((timeDate) => subDays(timeDate, numDays));
+      // dayDate.times.map((timeDate) => subDays(timeDate, numDays));
     });
     return shifted;
   }
@@ -199,7 +178,7 @@ export class ScheduleStore {
   clone(day: Day) {
     const cloned: Day = {
       weekday: day.weekday,
-      date: new Date(day.date.getTime()),
+      date: day.date,
       times: day.times.slice(0, day.times.length),
     };
     return cloned;

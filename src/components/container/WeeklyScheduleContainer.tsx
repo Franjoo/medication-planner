@@ -1,25 +1,20 @@
 import WeeklyScheduleTableGroup from "../groups/WeeklyScheduleTableGroup";
 import { useStore } from "../../hooks/useStores";
 import { observer } from "mobx-react";
-import { Day } from "../../models";
 import Scrollbar from "../atoms/Scrollbar";
-import { clamp, localDate } from "../../utils";
+import { clamp } from "../../utils";
 
 const WeeklyScheduleContainer = observer(() => {
   const { schedule } = useStore();
 
-  const onAddEntryClick = (day: Day) =>
-    schedule.addTimeEntry(localDate(day.date));
-  const onRemoveEntryClick = (day: Day) =>
-    schedule.removeTimeEntry(localDate(day.date));
   const scrollbarSize = clamp(schedule.days.length / 100, 0, 1);
   const scrollbarProgress = schedule.scrollProgress;
   const scrollbarEnabled = schedule.canGoBackward || schedule.canGoForward;
-
-  const onTimeChange = (day: Day, timeIndex: number, newValue: string) => {
-    console.log("new vlaue", newValue);
-    schedule.updateTime(day, timeIndex, newValue);
-  };
+  const onAddEntry = (dayIndex: number) => schedule.addTimeEntry(dayIndex);
+  const onRemoveEntry = (dayIndex: number, timeIndex: number) =>
+    schedule.removeTimeEntry(dayIndex, timeIndex);
+  const onUpdateEntry = (dayIndex: number, timeIndex: number, time: string) =>
+    schedule.updateTimeEntry(dayIndex, timeIndex, time);
 
   return (
     <>
@@ -27,9 +22,9 @@ const WeeklyScheduleContainer = observer(() => {
         days={schedule.displayDays}
         templateDays={schedule.templateDays}
         showTemplates={schedule.showTemplates}
-        onAddEntryClick={onAddEntryClick}
-        onRemoveEntryClick={onRemoveEntryClick}
-        onTimeChange={onTimeChange}
+        onAddEntryClick={onAddEntry}
+        onRemoveEntryClick={onRemoveEntry}
+        onTimeChange={onUpdateEntry}
       />
       {scrollbarEnabled && (
         <Scrollbar progress={scrollbarProgress} size={scrollbarSize} />

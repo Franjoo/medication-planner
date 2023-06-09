@@ -1,11 +1,11 @@
 export interface Day {
-  date: Date;
+  date: number;
   weekday: string;
-  times: Date[];
+  times: string[];
 }
 
 export interface Schedule {
-  startDate: Date;
-  endDate: Date;
+  startDate: number;
+  endDate: number;
   days: Day[];
 }
