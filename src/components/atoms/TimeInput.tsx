@@ -1,27 +1,33 @@
-import React from "react";
+import React, { ChangeEvent, forwardRef } from "react";
 
 interface Props {
-  defaultValue?: string;
+  onChange: (value: string) => void;
   onEnterUp?: () => void;
 }
 
-const TimeInput = ({ defaultValue = "10:00", onEnterUp }: Props) => {
-  const onKeyUp = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") onEnterUp?.();
-  };
+const TimeInput = forwardRef<HTMLInputElement | null, Props>(
+  ({ onChange, onEnterUp }: Props, ref) => {
+    const onKeyUp = (event: React.KeyboardEvent<HTMLInputElement>) => {
+      if (event.key === "Enter") onEnterUp?.();
+    };
+    const onValueChange = (event: ChangeEvent<HTMLInputElement>) => {
+      console.log("on change", event.target.value);
+      onChange(event.target.value);
+    };
 
-  return (
-    <input
-      autoFocus
-      defaultValue={defaultValue}
-      type="time"
-      min="00:00"
-      max="23:59"
-      className="themed-selection-color"
-      required
-      onKeyUp={onKeyUp}
-    />
-  );
-};
+    return (
+      <input
+        ref={ref}
+        onChange={onValueChange}
+        type="time"
+        defaultValue="06:00"
+        min="00:00"
+        max="23:59"
+        className="themed-selection-color"
+        onKeyUp={onKeyUp}
+      />
+    );
+  }
+);
 
 export default TimeInput;

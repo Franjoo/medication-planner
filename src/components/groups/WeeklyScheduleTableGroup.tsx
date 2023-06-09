@@ -8,6 +8,7 @@ interface Props {
   showTemplates: boolean;
   onAddEntryClick: (day: Day) => void;
   onRemoveEntryClick: (day: Day) => void;
+  onTimeChange: (day: Day, timeIndex: number, newValue: string) => void;
 }
 
 const WeeklyScheduleTableGroup = ({
@@ -16,6 +17,7 @@ const WeeklyScheduleTableGroup = ({
   showTemplates,
   onAddEntryClick,
   onRemoveEntryClick,
+  onTimeChange,
 }: Props) => {
   return (
     <div className="mb-20 flex [&>*:last-child]:mr-0">
@@ -24,6 +26,7 @@ const WeeklyScheduleTableGroup = ({
         (days.length === 0 && (
           <ScheduleTableItemGroup
             day={{ weekday: "template", times: [], date: new Date() }}
+            onChange={onTimeChange}
             onAddEntryClick={noop}
             onRemoveEntryClick={noop}
             isPlaceHolder
@@ -34,6 +37,7 @@ const WeeklyScheduleTableGroup = ({
         days?.map((day, index) => (
           <ScheduleTableItemGroup
             key={index}
+            onChange={onTimeChange}
             day={day}
             onAddEntryClick={onAddEntryClick}
             onRemoveEntryClick={onRemoveEntryClick}
@@ -44,6 +48,7 @@ const WeeklyScheduleTableGroup = ({
         templateDays?.map((templateDay, index) => (
           <ScheduleTableItemGroup
             key={index}
+            onChange={onTimeChange}
             day={templateDay}
             onAddEntryClick={onAddEntryClick}
             onRemoveEntryClick={onRemoveEntryClick}

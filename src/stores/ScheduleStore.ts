@@ -7,8 +7,9 @@ import differenceInDays from "date-fns/differenceInDays";
 import addDays from "date-fns/addDays";
 import subDays from "date-fns/subDays";
 import isBefore from "date-fns/isBefore";
+import parse from "date-fns/parse";
 import { format } from "date-fns";
-import { weekday } from "../utils";
+import { localDate, localTimeString, weekday } from "../utils";
 
 export class ScheduleStore {
   rangeStart?: Date;
@@ -27,9 +28,10 @@ export class ScheduleStore {
   }
 
   send() {
+    if (!this.rangeStart || !this.rangeEnd) return;
     const data = JSON.stringify({
-      startDate: this.rangeStart,
-      rangeEnd: this.rangeEnd,
+      startDate: localTimeString(this.rangeStart),
+      rangeEnd: localTimeString(this.rangeEnd),
       days: this.days,
     });
     // API.postSchedule(data)
@@ -163,6 +165,17 @@ export class ScheduleStore {
     // }
     // return templateDays;
     // // return [];
+  }
+
+  updateTime(day: Day, timeIndex: number, newValue: string) {
+    const newDate = parse(newValue, "HH:mm", localDate(day.date));
+    console.log("new Date", newDate, timeIndex, new Date());
+    const dayToUpdateIndex = this.days.findIndex(
+      (value) => value.date.getTime() === day.date.getTime()
+    );
+    if (dayToUpdateIndex === -1) return;
+    this.days[dayToUpdateIndex].times[timeIndex].setTime(newDate.getTime());
+    console.log("this days", this.days);
   }
 
   get canGoForward() {

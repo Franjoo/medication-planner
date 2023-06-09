@@ -30,3 +30,11 @@ export const lerp = (start: number, end: number, progress: number): number => {
 export const weekday = (date: Date) => {
   return format(date, "EEEE");
 };
+
+export const localDate = (date: Date) => {
+  return new Date(date.toISOString().slice(0, -1));
+};
+
+export const localTimeString = (date: Date) => {
+  return format(date, "yyyy-MM-dd'T'HH:mm:ss.sss");
+};

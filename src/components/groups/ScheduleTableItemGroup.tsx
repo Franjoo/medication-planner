@@ -8,6 +8,7 @@ import clsx from "clsx";
 
 interface Props {
   day: Day;
+  onChange: (day: Day, timeIndex: number, newValue: string) => void;
   onAddEntryClick: (day: Day) => void;
   onRemoveEntryClick: (day: Day) => void;
   isPlaceHolder?: boolean;
@@ -15,6 +16,7 @@ interface Props {
 
 const ScheduleTableItemGroup = ({
   day,
+  onChange,
   onAddEntryClick,
   onRemoveEntryClick,
   isPlaceHolder = false,
@@ -39,8 +41,9 @@ const ScheduleTableItemGroup = ({
       >
         {day.times.map((value, index) => (
           <TimeInputCellGroup
+            onChange={(time: string) => onChange(day, index, time)}
             key={index}
-            time={value}
+            value={value}
             onRemoveClick={() => onRemoveEntryClick(day)}
             onEnterUp={() => onAddEntryClick(day)}
           />
