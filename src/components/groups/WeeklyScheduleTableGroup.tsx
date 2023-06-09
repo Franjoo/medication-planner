@@ -5,6 +5,7 @@ import { noop } from "../../utils";
 interface Props {
   days?: Day[];
   templateDays?: Day[];
+  paginationIndex: number;
   showTemplates: boolean;
   onAddEntryClick: (dayIndex: number) => void;
   onRemoveEntryClick: (dayIndex: number, timeIndex: number) => void;
@@ -14,16 +15,23 @@ interface Props {
 const WeeklyScheduleTableGroup = ({
   days,
   templateDays,
+  paginationIndex,
   showTemplates,
   onAddEntryClick,
   onRemoveEntryClick,
   onTimeChange,
 }: Props) => {
+  const daysToShow = days?.slice(paginationIndex, paginationIndex + 7);
+  const templatesToShow = templateDays?.slice(
+    paginationIndex,
+    paginationIndex + 7
+  );
+
   return (
     <div className="mb-20 flex [&>*:last-child]:mr-0">
       {/* height placeholder */}
-      {!days ||
-        (days.length === 0 && (
+      {!daysToShow ||
+        (daysToShow.length === 0 && (
           <ScheduleTableItemGroup
             day={{ weekday: "template", times: [], date: 0 }}
             onChange={(timeIndex: number, time: string) =>
@@ -36,32 +44,34 @@ const WeeklyScheduleTableGroup = ({
         ))}
       {/* user created days */}
       {!showTemplates &&
-        days?.map((day, index) => (
+        daysToShow?.map((day, index) => (
           <ScheduleTableItemGroup
             key={index}
             onChange={(timeIndex: number, time: string) =>
-              onTimeChange(index, timeIndex, time)
+              onTimeChange(paginationIndex + index, timeIndex, time)
             }
             day={day}
-            onAddEntryClick={() => onAddEntryClick(index)}
+            onAddEntryClick={() => onAddEntryClick(paginationIndex + index)}
             onRemoveEntryClick={(timeIndex: number) =>
-              onRemoveEntryClick(index, timeIndex)
+              onRemoveEntryClick(paginationIndex + index, timeIndex)
             }
+            style={day.style}
           />
         ))}
       {/* template days */}
       {showTemplates &&
-        templateDays?.map((templateDay, index) => (
+        templatesToShow?.map((templateDay, index) => (
           <ScheduleTableItemGroup
             key={index}
             onChange={(timeIndex: number, time: string) =>
               onTimeChange(index, timeIndex, time)
             }
             day={templateDay}
-            onAddEntryClick={() => onAddEntryClick(index)}
+            onAddEntryClick={() => onAddEntryClick(paginationIndex + index)}
             onRemoveEntryClick={(timeIndex: number) =>
-              onRemoveEntryClick(index, timeIndex)
+              onRemoveEntryClick(paginationIndex + index, timeIndex)
             }
+            style={templateDay.style}
           />
         ))}
     </div>

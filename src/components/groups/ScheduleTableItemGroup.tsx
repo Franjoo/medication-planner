@@ -1,4 +1,4 @@
-import { Day } from "../../models";
+import { Day, Style } from "../../models";
 import TimeInputCellGroup from "./TimeInputCellGroup";
 import { B } from "../atoms/Typography";
 import { toGermanDateString } from "../../utils";
@@ -12,6 +12,7 @@ interface Props {
   onAddEntryClick: () => void;
   onRemoveEntryClick: (timeIndex: number) => void;
   isPlaceHolder?: boolean;
+  style?: Style;
 }
 
 const ScheduleTableItemGroup = ({
@@ -20,6 +21,7 @@ const ScheduleTableItemGroup = ({
   onAddEntryClick,
   onRemoveEntryClick,
   isPlaceHolder = false,
+  style,
 }: Props) => {
   const [hovered, setHovered] = useState(false);
 
@@ -46,6 +48,7 @@ const ScheduleTableItemGroup = ({
             value={value}
             onRemoveTimeClick={() => onRemoveEntryClick(index)}
             onAddTimeClick={() => onAddEntryClick()}
+            style={style}
           />
         ))}
         {/* todo check which type to use */}

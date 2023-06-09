@@ -2,10 +2,7 @@ export interface Day {
   date: number;
   weekday: string;
   times: string[];
+  style?: Style;
 }
 
-export interface Schedule {
-  startDate: number;
-  endDate: number;
-  days: Day[];
-}
+export type Style = "primary" | "secondary" | "disabled";

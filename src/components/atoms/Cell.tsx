@@ -1,12 +1,13 @@
 import { ReactElement } from "react";
 import clsx from "clsx";
+import { Style } from "../../models";
 
 interface Props {
   children?: ReactElement[] | ReactElement;
   className?: string;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
-  style?: "primary" | "secondary" | "disabled";
+  style?: Style;
 }
 
 const Cell = ({

@@ -6,7 +6,7 @@ import addDays from "date-fns/addDays";
 import subDays from "date-fns/subDays";
 import isBefore from "date-fns/isBefore";
 import { format } from "date-fns";
-import { localTimeString, weekday } from "../utils";
+import { deepClone, localTimeString, weekday } from "../utils";
 
 export class ScheduleStore {
   rangeStart?: Date;
@@ -16,7 +16,7 @@ export class ScheduleStore {
   sent = false;
 
   private DAYS_TO_DISPLAY = 7;
-  private index = 0;
+  index = 0;
   private autoCompleted = false;
 
   constructor() {
@@ -29,7 +29,13 @@ export class ScheduleStore {
     const data = JSON.stringify({
       startDate: localTimeString(new Date(this.rangeStart)),
       rangeEnd: localTimeString(new Date(this.rangeEnd)),
-      days: this.days,
+      days: this.days.map((value) => {
+        return {
+          date: localTimeString(value.date),
+          times: value.times,
+          weekday: value.weekday,
+        };
+      }),
     });
     // API.postSchedule(data)
     this.sent = true;
@@ -76,13 +82,11 @@ export class ScheduleStore {
         );
       }
     }
-    // debugger;
-
-    console.log("updated days", this.days);
   }
 
   addTimeEntry(dayIndex: number) {
     const updatedDays = [...this.days];
+    if (updatedDays[dayIndex].times.length >= 5) return;
     updatedDays[dayIndex].times.push("08:00");
     this.days = updatedDays;
   }
@@ -94,7 +98,6 @@ export class ScheduleStore {
   }
 
   updateTimeEntry(dayIndex: number, timeIndex: number, time: string) {
-    console.log("updateTimeEntry", dayIndex, timeIndex, time);
     this.days[dayIndex].times[timeIndex] = time;
   }
 
@@ -107,6 +110,7 @@ export class ScheduleStore {
         date: date.getTime(),
         weekday: format(date, "EEEE"),
         times: [],
+        style: "secondary",
       });
     }
     return days;
@@ -127,10 +131,6 @@ export class ScheduleStore {
     return this.days?.length || 0;
   }
 
-  get displayDays() {
-    return this.days.slice(this.index, this.index + this.DAYS_TO_DISPLAY);
-  }
-
   get scrollProgress() {
     return this.index / (this.days.length - this.DAYS_TO_DISPLAY);
   }
@@ -139,22 +139,33 @@ export class ScheduleStore {
     this.showTemplates = show;
   }
 
+  autoComplete() {
+    if (!this.templateDays) return;
+    this.days = this.templateDays.map((value) => {
+      return { ...value, style: "primary" };
+    });
+    this.autoCompleted = true;
+    this.showTemplates = false;
+  }
+
   get templateDays() {
-    return [];
-    // if (!this.autoCompleteEnabled) return;
-    // const fromIndex = 0;
-    // const toIndex = this.days.findIndex((value) => value.times.length === 0);
-    // const partToCopy = this.days.slice(fromIndex, toIndex);
-    // const copySteps = Math.floor(this.days.length / partToCopy.length);
-    //
-    // console.log(toIndex, partToCopy.length, copySteps);
-    // const templateDays = [];
-    // console.log("copy steps", copySteps);
-    // for (let i = 0; i < copySteps; i++) {
-    //   templateDays.push(...this.toShifted(partToCopy, -partToCopy.length));
-    // }
-    // return templateDays;
-    // // return [];
+    if (!this.showTemplates) return;
+
+    const fromIndex = 0;
+    const toIndex = this.days.findIndex((value) => !value.times.length);
+    const daysClone = deepClone(this.days);
+    const template = daysClone.slice(fromIndex, toIndex);
+    const clonedTimes = template.map((value) => value.times);
+
+    let timeTemplateIndex = 0;
+    for (let i = toIndex; i < daysClone.length; i++) {
+      timeTemplateIndex %= clonedTimes.length;
+      daysClone[i].times.push(...clonedTimes[timeTemplateIndex]);
+      daysClone[i].style = "disabled";
+      timeTemplateIndex++;
+    }
+
+    return daysClone;
   }
 
   get canGoForward() {
@@ -170,18 +181,8 @@ export class ScheduleStore {
     shifted.forEach((dayDate) => {
       dayDate.date = subDays(dayDate.date, numDays).getTime();
       dayDate.weekday = weekday(dayDate.date);
-      // dayDate.times.map((timeDate) => subDays(timeDate, numDays));
     });
     return shifted;
-  }
-
-  clone(day: Day) {
-    const cloned: Day = {
-      weekday: day.weekday,
-      date: day.date,
-      times: day.times.slice(0, day.times.length),
-    };
-    return cloned;
   }
 
   resetTimesAndAutoComplete() {
@@ -211,6 +212,7 @@ export class ScheduleStore {
   get autoCompleteEnabled() {
     return (
       this.days.length > 0 &&
+      this.days[0].times.length > 0 &&
       !this.autoCompleted &&
       !!this.days.find((value) => value.times.length === 0) &&
       !!this.days.find((value) => value.times.length > 0)

@@ -11,12 +11,12 @@ const TimeInput = forwardRef<HTMLInputElement | null, Props>(
       if (event.key === "Enter") onEnterPressed?.();
     };
     const onValueChange = (event: ChangeEvent<HTMLInputElement>) => {
-      console.log("on change", event.target.value);
       onChange(event.target.value);
     };
 
     return (
       <input
+        autoFocus
         ref={ref}
         onChange={onValueChange}
         type="time"

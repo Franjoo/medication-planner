@@ -1,9 +1,8 @@
 import { format } from "date-fns";
 
-export const toGermanDateString = (date: Date) => format(date, "dd.MM.yyyy"); // ISO 8601
-export const toIsoDateString = (date: Date) => format(date, "yyyy-MM-dd"); // ISO 8601
+export const toGermanDateString = (date: Date) => format(date, "dd.MM.yyyy");
 
-export const toTimeString = (date: Date) => format(date, "HH:mm");
+export const toIsoDateString = (date: Date) => format(date, "yyyy-MM-dd"); // ISO 8601
 
 export const last = <T>(array: T[]) => {
   if (!array.length) return;
@@ -31,10 +30,10 @@ export const weekday = (date: Date | number) => {
   return format(date, "EEEE");
 };
 
-export const localDate = (date: Date) => {
-  return new Date(date.toISOString().slice(0, -1));
-};
-
 export const localTimeString = (date: Date | number) => {
   return format(date, "yyyy-MM-dd'T'HH:mm:ss.sss");
+};
+
+export const deepClone = <T>(o: T): T => {
+  return JSON.parse(JSON.stringify(o));
 };

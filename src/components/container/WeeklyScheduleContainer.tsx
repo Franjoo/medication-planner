@@ -10,17 +10,21 @@ const WeeklyScheduleContainer = observer(() => {
   const scrollbarSize = clamp(schedule.days.length / 100, 0, 1);
   const scrollbarProgress = schedule.scrollProgress;
   const scrollbarEnabled = schedule.canGoBackward || schedule.canGoForward;
+
   const onAddEntry = (dayIndex: number) => schedule.addTimeEntry(dayIndex);
+
   const onRemoveEntry = (dayIndex: number, timeIndex: number) =>
     schedule.removeTimeEntry(dayIndex, timeIndex);
+
   const onUpdateEntry = (dayIndex: number, timeIndex: number, time: string) =>
     schedule.updateTimeEntry(dayIndex, timeIndex, time);
 
   return (
     <>
       <WeeklyScheduleTableGroup
-        days={schedule.displayDays}
+        days={schedule.days}
         templateDays={schedule.templateDays}
+        paginationIndex={schedule.index}
         showTemplates={schedule.showTemplates}
         onAddEntryClick={onAddEntry}
         onRemoveEntryClick={onRemoveEntry}

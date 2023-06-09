@@ -6,11 +6,15 @@ const ScheduleActionContainer = observer(() => {
   const { schedule } = useStore();
 
   const onReset = () => schedule.resetTimesAndAutoComplete();
-  const onAutoComplete = () => {};
+  const onAutoComplete = () => {
+    schedule.autoComplete();
+  };
   const onAutoCompleteMouseEnter = () => {
+    if (!schedule.autoCompleteEnabled) return;
     schedule.setShowTemplates(true);
   };
   const onAutoCompleteMouseLeave = () => {
+    if (!schedule.autoCompleteEnabled) return;
     schedule.setShowTemplates(false);
   };
 
