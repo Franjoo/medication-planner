@@ -152,7 +152,7 @@ export class ScheduleStore {
     if (!this.showTemplates) return;
 
     const fromIndex = 0;
-    const toIndex = this.days.findIndex((value) => !value.times.length);
+    const toIndex = this.days.findLastIndex((value) => value.times.length) + 1;
     const daysClone = deepClone(this.days);
     const template = daysClone.slice(fromIndex, toIndex);
     const clonedTimes = template.map((value) => value.times);
