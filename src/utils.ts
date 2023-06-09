@@ -1,7 +1,4 @@
 import { format } from "date-fns";
-import differenceInDays from "date-fns/differenceInDays";
-import addDays from "date-fns/addDays";
-import { Day } from "./models";
 
 export const toGermanDateString = (date: Date) => format(date, "dd.MM.yyyy"); // ISO 8601
 export const toIsoDateString = (date: Date) => format(date, "yyyy-MM-dd"); // ISO 8601

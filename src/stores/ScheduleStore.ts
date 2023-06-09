@@ -1,4 +1,4 @@
-import { makeAutoObservable, reaction, toJS } from "mobx";
+import { makeAutoObservable, reaction } from "mobx";
 import { Day } from "../models";
 
 import isSameDay from "date-fns/isSameDay";
@@ -52,7 +52,7 @@ export class ScheduleStore {
     this.rangeEnd = end;
   }
 
-  updateSchedule() {
+  private updateSchedule() {
     if (!this.rangeStart || !this.rangeEnd) return;
     if (!this.days.length) this.resetTimesAndAutoComplete();
 
@@ -105,7 +105,7 @@ export class ScheduleStore {
     this.days = updatedDays;
   }
 
-  createEmptyDays(startDate: Date, endDate: Date) {
+  private createEmptyDays(startDate: Date, endDate: Date) {
     const daysCount = -differenceInDays(startDate, endDate) + 1;
     const days: Day[] = [];
     for (let i = 0; i < daysCount; i++) {
@@ -173,9 +173,8 @@ export class ScheduleStore {
     return this.index > 0;
   }
 
-  toShifted(days: Day[], numDays: number) {
+  private toShifted(days: Day[], numDays: number) {
     const shifted = days.slice();
-    console.log("SHIFTED", toJS(shifted));
     shifted.forEach((dayDate) => {
       dayDate.date = subDays(dayDate.date, numDays);
       dayDate.weekday = weekday(dayDate.date);

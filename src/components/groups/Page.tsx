@@ -9,7 +9,7 @@ interface Props {
 const Page = ({ children, title }: Props) => {
   return (
     <>
-      <div className="p-12">
+      <div className="w-[1280px] p-12">
         <H2>{title}</H2>
         {children}
       </div>
