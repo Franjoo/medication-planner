@@ -19,9 +19,11 @@ const DateRangeSelectionContainer = observer(() => {
   }, [schedule]);
 
   const onStartChange = (value: string) => {
+    if (value.length === 0) return schedule.clearDays();
     schedule.setRangeStart(new Date(value));
   };
   const onEndChange = (value: string) => {
+    if (value.length === 0) return schedule.clearDays();
     schedule.setRangeEnd(new Date(value));
   };
 

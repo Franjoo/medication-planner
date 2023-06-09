@@ -34,7 +34,7 @@ export class ScheduleStore {
     });
     // API.postSchedule(data)
     this.sent = true;
-    console.info("---> schedule created", JSON.stringify(data));
+    console.info("---> schedule created", data);
   }
 
   setRangeStart(start: Date) {
@@ -53,6 +53,7 @@ export class ScheduleStore {
   }
 
   private updateSchedule() {
+    console.log("start", this.rangeStart, "end", this.rangeStart);
     if (!this.rangeStart || !this.rangeEnd) return;
     if (!this.days.length) this.resetTimesAndAutoComplete();
 
@@ -196,6 +197,10 @@ export class ScheduleStore {
     if (!this.rangeStart || !this.rangeEnd) return;
     this.days = this.createEmptyDays(this.rangeStart, this.rangeEnd);
     this.autoCompleted = false;
+  }
+
+  clearDays() {
+    this.days = [];
   }
 
   get resetEnabled() {

@@ -4,7 +4,7 @@ import clsx from "clsx";
 
 interface Props {
   text: string;
-  style: "primary" | "secondary";
+  style?: "primary" | "secondary";
   onClick: () => void;
   enabled?: boolean;
   className?: string;
@@ -14,7 +14,7 @@ interface Props {
 
 const Button = ({
   text,
-  style,
+  style = "primary",
   onClick,
   enabled = true,
   className,
