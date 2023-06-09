@@ -1,5 +1,5 @@
 import { ReactElement } from "react";
-import { H2 } from "../atoms/Typography";
+import { H2 } from "../components/atoms/Typography";
 
 interface Props {
   children?: ReactElement[] | ReactElement;
