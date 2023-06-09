@@ -18,12 +18,13 @@ const TimeInputCellGroup = ({ time, onRemoveClick, onEnterUp }: Props) => {
     <Cell
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      className="mb-3"
     >
       <Spacer className="mx-2.5" width={30} />
       <TimeInput onEnterUp={onEnterUp} />
       <IconDelete
         className={clsx(
-          " mx-2.5",
+          "pointer-events-none mx-2.5 opacity-0",
           hovered
             ? "pointer-events-auto cursor-pointer opacity-100"
             : "pointer-events-none opacity-0"

@@ -6,7 +6,7 @@ interface Props {
   text: string;
   style: "primary" | "secondary";
   onClick: () => void;
-  enabled: boolean;
+  enabled?: boolean;
   className?: string;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
@@ -16,7 +16,7 @@ const Button = ({
   text,
   style,
   onClick,
-  enabled,
+  enabled = true,
   className,
   onMouseEnter,
   onMouseLeave,

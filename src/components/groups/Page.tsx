@@ -1,5 +1,5 @@
 import { ReactElement } from "react";
-import { H1 } from "../atoms/Typography";
+import { H2 } from "../atoms/Typography";
 
 interface Props {
   children?: ReactElement[] | ReactElement;
@@ -10,7 +10,7 @@ const Page = ({ children, title }: Props) => {
   return (
     <>
       <div className="p-12">
-        <H1>{title}</H1>
+        <H2>{title}</H2>
         {children}
       </div>
     </>

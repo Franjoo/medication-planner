@@ -5,8 +5,6 @@ import Divider from "../atoms/Divider";
 
 interface Props {
   dayRangeCount: number;
-  onNextClick: () => void;
-  onPreviousClick: () => void;
   previousEnabled: boolean;
   nextEnabled: boolean;
   onStartChange: (value: string) => void;
@@ -18,8 +16,6 @@ interface Props {
 
 const DateRangeSelectionGroup = ({
   dayRangeCount,
-  onPreviousClick,
-  onNextClick,
   previousEnabled,
   nextEnabled,
   onStartChange,
@@ -46,17 +42,8 @@ const DateRangeSelectionGroup = ({
           <DateRangeDisplay dayRangeCount={dayRangeCount} />
         </div>
         <DayNavigation
-          {...{
-            onNextClick,
-            onPreviousClick,
-            previousEnabled,
-            nextEnabled,
-          }}
-
-          // onPreviousClick={onNavigateToPrevious}
-          // onNextClick={onNavigateToNext}
-          // previousDisabled={navigateToPreviousDisabled}
-          // nextDisabled={navigateToNextDisabled}
+          nextEnabled={nextEnabled}
+          previousEnabled={previousEnabled}
         />
       </div>
       <Divider />

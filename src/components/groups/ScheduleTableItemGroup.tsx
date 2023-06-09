@@ -23,7 +23,7 @@ const ScheduleTableItemGroup = ({
 
   return (
     <div
-      className={clsx("text-center", {
+      className={clsx("mr-3 text-center ", {
         "pointer-none opacity-0": isPlaceHolder,
       })}
     >
@@ -31,7 +31,7 @@ const ScheduleTableItemGroup = ({
       <B>{toGermanDateString(day.date)}</B>
       <div
         className={clsx(
-          "mr-3 mt-4 flex h-day w-cell flex-col [&>*:last-child]:mb-0 ",
+          "mt-4 flex h-day w-cell flex-col [&>*:last-child]:mb-0 ",
           hovered ? "bg-[#D8D8D8]" : "bg-[#F4F4F4]"
         )}
         onMouseEnter={() => setHovered(true)}

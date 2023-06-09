@@ -18,9 +18,6 @@ const DateRangeSelectionContainer = observer(() => {
     };
   }, [schedule]);
 
-  const onNavigateToPrevious = () => console.log("bar");
-  const onNavigateToNext = () => console.log("foo");
-
   const onStartChange = (value: string) => {
     schedule.setRangeStart(new Date(value));
   };
@@ -34,8 +31,6 @@ const DateRangeSelectionContainer = observer(() => {
 
   return (
     <DateRangeSelectionGroup
-      onPreviousClick={onNavigateToPrevious}
-      onNextClick={onNavigateToNext}
       previousEnabled={schedule.canGoBackward}
       nextEnabled={schedule.canGoForward}
       dayRangeCount={schedule.daysCount}

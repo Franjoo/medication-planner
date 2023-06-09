@@ -7,10 +7,14 @@ const ScheduleActionContainer = observer(() => {
 
   const onReset = () => schedule.resetTimesAndAutoComplete();
   const onAutoComplete = () => {};
-  const onAutoCompleteMouseEnter = () => {};
-  const onAutoCompleteMouseLeave = () => {};
-  const onUpload = () => {};
-  const autoCompleteEnabled = true;
+  const onAutoCompleteMouseEnter = () => {
+    schedule.setShowTemplates(true);
+  };
+  const onAutoCompleteMouseLeave = () => {
+    schedule.setShowTemplates(false);
+  };
+
+  const onUpload = () => schedule.send();
 
   return (
     <ScheduleActionGroup
