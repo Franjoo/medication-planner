@@ -1,16 +1,19 @@
 # medication-planner
 
-# Architecture
+## Run
+```npm run dev```
+
+## Architecture
 - Atomic Design
 
-# Stack
+## Stack
 - Vite
 - React
 - Typescript
 - TailwindCSS
 - MobX
 
-# this project features
+## Features
 - clsx for dynamic styles
 - semantic html
 - html dialog element
