@@ -3,6 +3,7 @@ import DateRangeSelectionContainer from "../components/container/DateRangeSelect
 import Page from "../components/groups/Page";
 import React from "react";
 import ScheduleActionContainer from "../components/container/ScheduleActionContainer";
+import DialogContainer from "../components/container/DialogContainer";
 
 const Home = () => {
   return (
@@ -10,6 +11,7 @@ const Home = () => {
       <DateRangeSelectionContainer />
       <WeeklyScheduleContainer />
       <ScheduleActionContainer />
+      <DialogContainer />
     </Page>
   );
 };

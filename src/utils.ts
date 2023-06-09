@@ -25,3 +25,11 @@ export const clamp = (value: number, min: number, max: number) => {
 export const noop = () => {
   /* do nothing */
 };
+
+export const lerp = (start: number, end: number, progress: number): number => {
+  return start + (end - start) * progress;
+};
+
+export const weekday = (date: Date) => {
+  return format(date, "EEEE");
+};
