@@ -21,7 +21,7 @@ const Cell = ({
       "flex h-cell w-cell items-center justify-center border-1 border-black bg-white",
       { "border-black text-black": style === "primary" },
       { "border-pink text-pink": style === "secondary" },
-      { "border-light-grey text-light-grey": style === "disabled" },
+      { "border-grey-AC text-grey-AC": style === "disabled" },
       className
     )}
     onMouseEnter={onMouseEnter}

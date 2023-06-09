@@ -34,7 +34,7 @@ export class ScheduleStore {
     });
     // API.postSchedule(data)
     this.sent = true;
-    console.info("---> schedule created", data);
+    console.info("---> schedule created\n\n", data);
   }
 
   setRangeStart(start: Date) {
@@ -53,7 +53,6 @@ export class ScheduleStore {
   }
 
   private updateSchedule() {
-    console.log("start", this.rangeStart, "end", this.rangeStart);
     if (!this.rangeStart || !this.rangeEnd) return;
     if (!this.days.length) this.resetTimesAndAutoComplete();
 

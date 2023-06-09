@@ -10,7 +10,7 @@ const DialogGroup = forwardRef<HTMLDialogElement | null, Props>(
   ({ onNewScheduleClick }: Props, ref) => {
     return (
       <dialog
-        className="border-2 border-black px-20 py-10 text-center backdrop:bg-[#000000BB]"
+        className="border-2 border-black px-20 py-10 text-center backdrop:bg-black-transparent"
         ref={ref}
       >
         <H1>

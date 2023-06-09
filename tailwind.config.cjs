@@ -6,8 +6,13 @@ module.exports = {
     }, extend: {
       colors: {
         "pink": "#E11BB6",
-        "dark-grey": "#303030",
-        "light-grey": "#ACACAC"
+        "black-transparent": "#000000BB",
+        "grey-30": "#303030",
+        "grey-5C": "#5C5C5C",
+        "grey-AC": "#ACACAC",
+        "grey-C8": "#C8C8C8",
+        "grey-D8": "#D8D8D8",
+        "grey-F4": "#F4F4F4"
       },
       borderWidth:{
         "1": "1px"

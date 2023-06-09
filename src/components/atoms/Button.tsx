@@ -27,7 +27,7 @@ const Button = ({
       onMouseLeave={onMouseLeave}
       className={clsx(
         "h-cell w-cell text-white",
-        { "bg-dark-grey": style === "primary" },
+        { "bg-grey-30": style === "primary" },
         { "bg-pink": style === "secondary" },
         { "opacity-30": !enabled },
         className
