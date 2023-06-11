@@ -1,6 +1,8 @@
 import { Day } from "../../models";
 import ScheduleTableItemGroup from "./ScheduleTableItemGroup";
 import { noop } from "../../utils";
+import { useMemo } from "react";
+import { MAX_ITEMS_PER_PAGE } from "../../constants";
 
 interface Props {
   days?: Day[];
@@ -21,7 +23,15 @@ const WeeklyScheduleTableGroup = ({
   onRemoveEntryClick,
   onTimeChange,
 }: Props) => {
-  const daysToShow = days?.slice(paginationIndex, paginationIndex + 7);
+  // const daysToShow = useMemo(() => {
+  //   return days?.slice(paginationIndex, paginationIndex + MAX_ITEMS_PER_PAGE);
+  // }, [days, paginationIndex]);
+
+  const daysToShow = days?.slice(
+    paginationIndex,
+    paginationIndex + MAX_ITEMS_PER_PAGE
+  );
+
   const templatesToShow = templateDays?.slice(
     paginationIndex,
     paginationIndex + 7

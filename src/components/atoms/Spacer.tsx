@@ -4,7 +4,7 @@ interface Props {
   height?: number;
 }
 
-const Spacer = ({ className = "", width = 0, height = 0 }: Props) => (
+const Spacer = ({ className, width = 0, height = 0 }: Props) => (
   <>
     {(className || width || height) && (
       <span className={className} style={{ width: width, height: height }} />
