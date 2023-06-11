@@ -24,15 +24,15 @@ const ScheduleActionGroup = ({
   return (
     <div className="flex justify-end">
       <Button
-        text={"Reset"}
-        style={"primary"}
+        text="Reset"
+        style="primary"
         onClick={onReset}
         enabled={resetEnabled}
         className="mr-3"
       />
       <Button
-        text={"Autocomplete"}
-        style={"secondary"}
+        text="Autocomplete"
+        style="secondary"
         onClick={onAutoComplete}
         enabled={autoCompleteEnabled}
         onMouseEnter={onAutoCompleteMouseEnter}
@@ -40,8 +40,8 @@ const ScheduleActionGroup = ({
         className="mr-3"
       />
       <Button
-        text={"Upload"}
-        style={"primary"}
+        text="Upload"
+        style="primary"
         onClick={onUpload}
         enabled={uploadEnabled}
       />

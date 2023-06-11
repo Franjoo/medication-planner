@@ -22,7 +22,6 @@ const TimeInput = forwardRef<HTMLInputElement | null, Props>(
         type="time"
         min="00:00"
         max="23:59"
-        className="themed-selection-color"
         onKeyUp={onKeyUp}
       />
     );

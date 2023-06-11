@@ -5,10 +5,11 @@ import { toGermanDateString } from "../../utils";
 import AddTimeEntry from "../atoms/AddTimeEntry";
 import { useState } from "react";
 import clsx from "clsx";
+import { MAX_TIME_ENTRIES_PER_DAY } from "../../constants";
 
 interface Props {
   day: Day;
-  onChange: (timeIndex: number, newValue: string) => void;
+  onUpdateEntryClick: (timeIndex: number, newValue: string) => void;
   onAddEntryClick: () => void;
   onRemoveEntryClick: (timeIndex: number) => void;
   isPlaceHolder?: boolean;
@@ -17,7 +18,7 @@ interface Props {
 
 const ScheduleTableItemGroup = ({
   day,
-  onChange,
+  onUpdateEntryClick,
   onAddEntryClick,
   onRemoveEntryClick,
   isPlaceHolder = false,
@@ -43,7 +44,7 @@ const ScheduleTableItemGroup = ({
       >
         {day.times.map((value, index) => (
           <TimeInputCellGroup
-            onChange={(time: string) => onChange(index, time)}
+            onChange={(time: string) => onUpdateEntryClick(index, time)}
             key={index}
             value={value}
             onRemoveTimeClick={() => onRemoveEntryClick(index)}
@@ -51,8 +52,7 @@ const ScheduleTableItemGroup = ({
             style={style}
           />
         ))}
-        {/* todo check which type to use */}
-        {hovered && day.times.length < 5 && (
+        {hovered && day.times.length < MAX_TIME_ENTRIES_PER_DAY && (
           <AddTimeEntry onClick={() => onAddEntryClick()} />
         )}
       </div>

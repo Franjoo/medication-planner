@@ -5,8 +5,9 @@ import { B } from "../atoms/Typography";
 import clsx from "clsx";
 
 interface Props {
+  showAutoCompletes: boolean;
   templateLength: number;
-  paginationIndex: number;
+  firstItemIndex: number;
   days: Day[];
 }
 
@@ -15,9 +16,10 @@ interface Block {
   length: number;
 }
 
-const TemplateItemGroup = ({
+const AutomCompleteBlocksGroup = ({
+  showAutoCompletes,
   templateLength,
-  paginationIndex,
+  firstItemIndex,
   days,
 }: Props) => {
   const itemWidth = 160;
@@ -31,32 +33,25 @@ const TemplateItemGroup = ({
     const maxItems = Math.min(days.length, MAX_ITEMS_PER_PAGE);
     let lastBlockLength = 0;
     for (let i = 0; i <= maxItems; i++) {
-      const currentBlockIndex = blocksIndices[paginationIndex + i];
-      const lastBlockIndex =
-        blocksIndices[Math.max(0, paginationIndex + i - 1)];
-
-      const isRightEdge = i == maxItems;
+      const currentBlockIndex = blocksIndices[firstItemIndex + i];
+      const lastBlockIndex = blocksIndices[Math.max(0, firstItemIndex + i - 1)];
+      const isRightEdge = i === maxItems;
       const nextBlockFound = currentBlockIndex > lastBlockIndex;
       const isBlockEnd = isRightEdge || nextBlockFound;
-
-      if (isBlockEnd) {
-        blocks.push({
-          length: lastBlockLength,
-          isTemplate: !lastBlockIndex,
-        });
+      if (isBlockEnd && lastBlockLength) {
+        blocks.push({ length: lastBlockLength, isTemplate: !lastBlockIndex });
         lastBlockLength = 0;
       }
       lastBlockLength++;
     }
-
     return blocks;
-  }, [days, paginationIndex, templateLength]);
+  }, [days, firstItemIndex, templateLength]);
 
   return (
     <div
       className={clsx(
         "flex w-full [&>*:last-child]:-mr-3 [&>*]:mr-3",
-        templateLength == 0 ? "opacity-0" : "opacity-100"
+        showAutoCompletes ? "opacity-100" : "opacity-0"
       )}
     >
       {blocks.map((block, index) => (
@@ -77,4 +72,4 @@ const TemplateItemGroup = ({
   );
 };
 
-export default TemplateItemGroup;
+export default AutomCompleteBlocksGroup;

@@ -14,7 +14,7 @@ module.exports = {
         "grey-D8": "#D8D8D8",
         "grey-F4": "#F4F4F4"
       },
-      borderWidth:{
+      borderWidth: {
         "1": "1px"
       },
       height: {
@@ -22,7 +22,7 @@ module.exports = {
         day: "calc(5 * 48px + 4 * 12px)"
       },
       width: {
-        cell: "160px"
+        cell: "160px",
       },
       spacing: {
         cell: "48px"

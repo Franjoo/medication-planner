@@ -10,13 +10,28 @@ const ScheduleActionContainer = observer(() => {
     schedule.autoComplete();
   };
   const onAutoCompleteMouseEnter = () => {
-    if (!schedule.autoCompleteEnabled) return;
+    if (!autoCompleteEnabled) return;
     schedule.setShowAutoCompletes(true);
   };
   const onAutoCompleteMouseLeave = () => {
-    if (!schedule.autoCompleteEnabled) return;
+    if (!autoCompleteEnabled) return;
     schedule.setShowAutoCompletes(false);
   };
+
+  const resetEnabled =
+    schedule.days.length > 0 &&
+    !!schedule.days.find((value) => value.times.length > 0);
+
+  const uploadEnabled =
+    schedule.days.length > 0 &&
+    !schedule.days.find((value) => value.times.length === 0);
+
+  const autoCompleteEnabled =
+    schedule.days.length > 0 &&
+    schedule.days[0].times.length > 0 &&
+    !schedule.autoCompleted &&
+    !!schedule.days.find((value) => value.times.length === 0) &&
+    !!schedule.days.find((value) => value.times.length > 0);
 
   const onUpload = () => schedule.send();
 
@@ -27,9 +42,9 @@ const ScheduleActionContainer = observer(() => {
       onAutoCompleteMouseEnter={onAutoCompleteMouseEnter}
       onAutoCompleteMouseLeave={onAutoCompleteMouseLeave}
       onUpload={onUpload}
-      resetEnabled={schedule.resetEnabled}
-      autoCompleteEnabled={schedule.autoCompleteEnabled}
-      uploadEnabled={schedule.uploadEnabled}
+      resetEnabled={resetEnabled}
+      autoCompleteEnabled={autoCompleteEnabled}
+      uploadEnabled={uploadEnabled}
     />
   );
 });

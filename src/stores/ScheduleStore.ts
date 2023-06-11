@@ -5,9 +5,12 @@ import differenceInDays from "date-fns/differenceInDays";
 import addDays from "date-fns/addDays";
 import subDays from "date-fns/subDays";
 import isBefore from "date-fns/isBefore";
-import { format } from "date-fns";
-import { deepClone, localTimeString, weekday } from "../utils";
-import { MAX_ITEMS_PER_PAGE, MAX_TIME_ENTRIES_PER_DAY } from "../constants";
+import { deepClone, emptyDay, localTimeString, weekday } from "../utils";
+import {
+  MAX_ITEMS_PER_PAGE,
+  MAX_STEPS_PER_NAVIGATION,
+  MAX_TIME_ENTRIES_PER_DAY,
+} from "../constants";
 
 export class ScheduleStore {
   rangeStart?: Date;
@@ -18,7 +21,7 @@ export class ScheduleStore {
   sent = false;
   firstItemIndex = 0;
   autoCompleted = false;
-  private autoCompleteReady = false;
+  autoCompleteReady = false;
 
   constructor() {
     makeAutoObservable(this);
@@ -40,7 +43,7 @@ export class ScheduleStore {
     });
     // API.postSchedule(data)
     this.sent = true;
-    console.info("---> schedule created\n\n", data);
+    console.info("-> schedule created\n\n", data);
   }
 
   setRangeStart(start: Date) {
@@ -56,39 +59,6 @@ export class ScheduleStore {
   setRangeEnd(end: Date) {
     if (this.rangeStart && isBefore(end, this.rangeStart)) return;
     this.rangeEnd = end;
-  }
-
-  autoComplete() {
-    if (!this.autoDays) return;
-    this.days = this.autoDays.map((value) => {
-      return { ...value, style: "primary" };
-    });
-    this.showAutoCompletes = false;
-  }
-
-  updateAutoDays() {
-    if (this.autoCompleteReady) return;
-    if (this.templateLength == 0 || this.templateLength == this.days.length) {
-      return;
-    }
-
-    const fromIndex = 0;
-    const toIndex = this.templateLength;
-    const daysClone = deepClone(this.days);
-    const template = daysClone.slice(fromIndex, toIndex);
-    const clonedTimes = template.map((value) => value.times);
-
-    let timeTemplateIndex = 0;
-    for (let i = toIndex; i < daysClone.length; i++) {
-      timeTemplateIndex %= clonedTimes.length;
-      daysClone[i].times.push(...clonedTimes[timeTemplateIndex]);
-      daysClone[i].style = "disabled";
-      timeTemplateIndex++;
-    }
-
-    console.log("update autoComplete");
-    this.autoDays = daysClone.slice();
-    this.autoCompleteReady = true;
   }
 
   private updateDateRange() {
@@ -118,6 +88,45 @@ export class ScheduleStore {
     }
   }
 
+  private updateAutoDays() {
+    if (this.autoCompleteReady) return;
+    if (this.templateLength == 0 || this.templateLength == this.days.length) {
+      return;
+    }
+
+    const fromIndex = 0;
+    const toIndex = this.templateLength;
+    const daysClone = deepClone(this.days);
+    const template = daysClone.slice(fromIndex, toIndex);
+    const clonedTimes = template.map((value) => value.times);
+
+    let timeTemplateIndex = 0;
+    for (let i = toIndex; i < daysClone.length; i++) {
+      timeTemplateIndex %= clonedTimes.length;
+      daysClone[i].times.push(...clonedTimes[timeTemplateIndex]);
+      daysClone[i].style = "disabled";
+      timeTemplateIndex++;
+    }
+
+    this.autoDays = daysClone.slice();
+    this.autoCompleteReady = true;
+  }
+
+  autoComplete() {
+    if (!this.autoDays) return;
+    this.days = this.autoDays.map((value) => {
+      return { ...value, style: "primary" };
+    });
+    this.showAutoCompletes = false;
+  }
+
+  setShowAutoCompletes(show: boolean) {
+    if (!this.autoCompleteReady) {
+      this.updateAutoDays();
+    }
+    this.showAutoCompletes = show;
+  }
+
   addTimeEntry(dayIndex: number) {
     const updatedDays = [...this.days];
     if (updatedDays[dayIndex].times.length >= MAX_TIME_ENTRIES_PER_DAY) return;
@@ -140,40 +149,31 @@ export class ScheduleStore {
     const days: Day[] = [];
     for (let i = 0; i < daysCount; i++) {
       const date = addDays(startDate, i);
-      days.push({
-        date: date.getTime(),
-        weekday: format(date, "EEEE"),
-        times: [],
-        style: "secondary",
-      });
+      days.push(emptyDay(date));
     }
     return days;
   }
 
   next() {
     this.firstItemIndex = Math.min(
-      this.firstItemIndex + MAX_ITEMS_PER_PAGE,
+      this.firstItemIndex + MAX_STEPS_PER_NAVIGATION,
       this.days.length - MAX_ITEMS_PER_PAGE
     );
   }
 
   previous() {
-    this.firstItemIndex = Math.max(0, this.firstItemIndex - MAX_ITEMS_PER_PAGE);
+    this.firstItemIndex = Math.max(
+      0,
+      this.firstItemIndex - MAX_STEPS_PER_NAVIGATION
+    );
+  }
+
+  get paginationProgress() {
+    return this.firstItemIndex / (this.days.length - MAX_ITEMS_PER_PAGE);
   }
 
   get daysCount() {
     return this.days?.length || 0;
-  }
-
-  get scrollProgress() {
-    return this.firstItemIndex / (this.days.length - MAX_ITEMS_PER_PAGE);
-  }
-
-  setShowAutoCompletes(show: boolean) {
-    if (!this.autoCompleteReady) {
-      this.updateAutoDays();
-    }
-    this.showAutoCompletes = show;
   }
 
   get templateLength() {
@@ -189,12 +189,11 @@ export class ScheduleStore {
   }
 
   private toShifted(days: Day[], numDays: number) {
-    const shifted = days.slice();
-    shifted.forEach((dayDate) => {
-      dayDate.date = subDays(dayDate.date, numDays).getTime();
-      dayDate.weekday = weekday(dayDate.date);
-    });
-    return shifted;
+    return days.slice().map((value) => ({
+      ...value,
+      date: subDays(value.date, numDays).getTime(),
+      weekday: weekday(value.date),
+    }));
   }
 
   resetTimesAndAutoComplete() {
@@ -203,32 +202,12 @@ export class ScheduleStore {
     this.autoCompleted = false;
   }
 
+  resetSentStatus() {
+    this.sent = false;
+  }
+
   clearDays() {
     this.days = [];
-  }
-
-  get resetEnabled() {
-    return (
-      this.days.length > 0 &&
-      !!this.days.find((value) => value.times.length > 0)
-    );
-  }
-
-  get uploadEnabled() {
-    return (
-      this.days.length > 0 &&
-      !this.days.find((value) => value.times.length === 0)
-    );
-  }
-
-  get autoCompleteEnabled() {
-    return (
-      this.days.length > 0 &&
-      this.days[0].times.length > 0 &&
-      !this.autoCompleted &&
-      !!this.days.find((value) => value.times.length === 0) &&
-      !!this.days.find((value) => value.times.length > 0)
-    );
   }
 
   initReactions() {

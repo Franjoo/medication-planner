@@ -7,21 +7,12 @@ import { toIsoDateString } from "../../utils";
 
 interface Props {
   title: string;
-  onClick?: () => void;
-  className?: string;
   onChange: (value: string) => void;
   value?: Date;
   minValue?: Date;
 }
 
-const DateInputCellGroup = ({
-  title,
-  onClick,
-  className,
-  onChange,
-  value,
-  minValue,
-}: Props) => {
+const DateInputCellGroup = ({ title, onChange, value, minValue }: Props) => {
   const ref = useRef<HTMLInputElement | null>(null);
 
   const showPicker = () => {

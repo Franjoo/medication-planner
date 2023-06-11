@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren } from "react";
+import { PropsWithChildren } from "react";
 import clsx from "clsx";
 
 interface ITypography extends PropsWithChildren {
@@ -16,7 +16,7 @@ const fontStyles = (props: ITypography) => {
   return styles;
 };
 
-export const H1: FC<ITypography> = (props) => (
+export const H1 = (props: ITypography) => (
   <h2
     className={clsx(
       "mb-10 font-inter text-3xl text-black",
@@ -28,7 +28,7 @@ export const H1: FC<ITypography> = (props) => (
   </h2>
 );
 
-export const H2: FC<ITypography> = (props) => (
+export const H2 = (props: ITypography) => (
   <h2
     className={clsx(
       "mb-11 font-inter text-2xl font-semibold text-black",
@@ -40,7 +40,7 @@ export const H2: FC<ITypography> = (props) => (
   </h2>
 );
 
-export const B: FC<ITypography> = (props) => (
+export const B = (props: ITypography) => (
   <p
     className={clsx(
       "font-inter text-lg text-black",

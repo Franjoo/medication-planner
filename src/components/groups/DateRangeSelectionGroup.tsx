@@ -39,9 +39,7 @@ const DateRangeSelectionGroup = ({
             value={end}
             minValue={minEnd}
           />
-          {dayRangeCount > 0 && (
-            <DateRangeDisplay dayRangeCount={dayRangeCount} />
-          )}
+          {dayRangeCount && <DateRangeDisplay dayRangeCount={dayRangeCount} />}
         </div>
         <DayNavigation
           nextEnabled={nextEnabled}
