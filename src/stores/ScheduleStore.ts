@@ -5,7 +5,7 @@ import differenceInDays from "date-fns/differenceInDays";
 import addDays from "date-fns/addDays";
 import subDays from "date-fns/subDays";
 import isBefore from "date-fns/isBefore";
-import { deepClone, emptyDay, localTimeString, weekday } from "../utils";
+import { clamp, deepClone, emptyDay, localTimeString, weekday } from "../utils";
 import {
   MAX_ITEMS_PER_PAGE,
   MAX_STEPS_PER_NAVIGATION,
@@ -86,6 +86,8 @@ export class ScheduleStore {
         );
       }
     }
+
+    this.sanitizeFirstItemIndex();
   }
 
   private updateAutoDays() {
@@ -155,17 +157,26 @@ export class ScheduleStore {
   }
 
   next() {
-    this.firstItemIndex = Math.min(
-      this.firstItemIndex + MAX_STEPS_PER_NAVIGATION,
-      this.days.length - MAX_ITEMS_PER_PAGE
-    );
+    this.firstItemIndex = this.firstItemIndex + MAX_STEPS_PER_NAVIGATION;
+    this.sanitizeFirstItemIndex();
   }
 
   previous() {
-    this.firstItemIndex = Math.max(
-      0,
-      this.firstItemIndex - MAX_STEPS_PER_NAVIGATION
-    );
+    this.firstItemIndex = this.firstItemIndex - MAX_STEPS_PER_NAVIGATION;
+    this.sanitizeFirstItemIndex();
+  }
+
+  private sanitizeFirstItemIndex() {
+    if (
+      this.firstItemIndex < 0 ||
+      this.firstItemIndex > this.days.length - MAX_ITEMS_PER_PAGE
+    ) {
+      this.firstItemIndex = clamp(
+        this.firstItemIndex + MAX_STEPS_PER_NAVIGATION,
+        0,
+        this.days.length - MAX_ITEMS_PER_PAGE
+      );
+    }
   }
 
   get paginationProgress() {

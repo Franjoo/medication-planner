@@ -20,7 +20,7 @@ const Scrollbar = ({ progress, size }: Props) => {
   return (
     <div className="mb-9 w-full" ref={ref}>
       <div
-        className="h-3 bg-black transition-transform"
+        className="h-3 bg-black"
         style={{
           width: width + "px",
           transform: `translateX(${translateX}px)`,

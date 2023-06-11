@@ -29,10 +29,6 @@ const DateRangeSelectionContainer = observer(() => {
     schedule.setRangeEnd(new Date(value));
   };
 
-  const minEnd = schedule.rangeStart;
-  const start = schedule.rangeStart;
-  const end = schedule.rangeEnd;
-
   return (
     <DateRangeSelectionGroup
       previousEnabled={schedule.canGoBackward}
@@ -40,9 +36,9 @@ const DateRangeSelectionContainer = observer(() => {
       dayRangeCount={schedule.daysCount}
       onStartChange={onStartChange}
       onEndChange={onEndChange}
-      start={start}
-      end={end}
-      minEnd={minEnd}
+      start={schedule.rangeStart}
+      end={schedule.rangeEnd}
+      minEnd={schedule.rangeStart}
     />
   );
 });

@@ -6,6 +6,7 @@ import { clamp } from "../../utils";
 import AutoCompleteBlocks from "../groups/AutomCompleteBlocksGroup";
 import { useMemo } from "react";
 import { MAX_ITEMS_PER_PAGE } from "../../constants";
+import Spacer from "../atoms/Spacer";
 
 const WeeklyScheduleContainer = observer(() => {
   const { schedule } = useStore();
@@ -47,6 +48,7 @@ const WeeklyScheduleContainer = observer(() => {
         firstItemIndex={schedule.firstItemIndex}
         days={schedule.days}
       />
+      <Spacer height={40} block />
       {scrollbarEnabled && (
         <Scrollbar
           progress={schedule.paginationProgress}
