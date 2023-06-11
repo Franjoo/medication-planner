@@ -20,7 +20,7 @@ const DateInput = forwardRef<HTMLInputElement | null, Props>(
         type="date"
         min={minValue}
         max={maxValue}
-        className="themed-selection-color pointer-events-none select-none text-center"
+        className="pointer-events-none select-none text-center"
       />
     );
   }

@@ -3,79 +3,56 @@ import ScheduleTableItemGroup from "./ScheduleTableItemGroup";
 import { noop } from "../../utils";
 
 interface Props {
-  days?: Day[];
-  templateDays?: Day[];
-  paginationIndex: number;
-  showTemplates: boolean;
-  onAddEntryClick: (dayIndex: number) => void;
-  onRemoveEntryClick: (dayIndex: number, timeIndex: number) => void;
-  onTimeChange: (dayIndex: number, timeIndex: number, time: string) => void;
+  displayDays: Day[];
+  firstItemIndex: number;
+  showAutoCompletes: boolean;
+  onAddEntry: (dayIndex: number) => void;
+  onRemoveEntry: (dayIndex: number, timeIndex: number) => void;
+  onUpdateEntry: (dayIndex: number, timeIndex: number, time: string) => void;
 }
 
 const WeeklyScheduleTableGroup = ({
-  days,
-  templateDays,
-  paginationIndex,
-  showTemplates,
-  onAddEntryClick,
-  onRemoveEntryClick,
-  onTimeChange,
+  displayDays,
+  firstItemIndex,
+  onAddEntry,
+  onRemoveEntry,
+  onUpdateEntry,
 }: Props) => {
-  const daysToShow = days?.slice(paginationIndex, paginationIndex + 7);
-  const templatesToShow = templateDays?.slice(
-    paginationIndex,
-    paginationIndex + 7
-  );
+  const onUpdateEntryClick =
+    (index: number) => (timeIndex: number, time: string) =>
+      onUpdateEntry(firstItemIndex + index, timeIndex, time);
+
+  const onAddEntryClick = (index: number) => () =>
+    onAddEntry(firstItemIndex + index);
+
+  const onRemoveEntryClick = (index: number) => (timeIndex: number) =>
+    onRemoveEntry(firstItemIndex + index, timeIndex);
 
   return (
-    <div className="mb-20 flex [&>*:last-child]:mr-0">
-      {/* height placeholder */}
-      {!daysToShow ||
-        (daysToShow.length === 0 && (
-          <ScheduleTableItemGroup
-            day={{ weekday: "template", times: [], date: 0 }}
-            onChange={(timeIndex: number, time: string) =>
-              onTimeChange(0, timeIndex, time)
-            }
-            onAddEntryClick={noop}
-            onRemoveEntryClick={noop}
-            isPlaceHolder
-          />
-        ))}
-      {/* user created days */}
-      {!showTemplates &&
-        daysToShow?.map((day, index) => (
-          <ScheduleTableItemGroup
-            key={index}
-            onChange={(timeIndex: number, time: string) =>
-              onTimeChange(paginationIndex + index, timeIndex, time)
-            }
-            day={day}
-            onAddEntryClick={() => onAddEntryClick(paginationIndex + index)}
-            onRemoveEntryClick={(timeIndex: number) =>
-              onRemoveEntryClick(paginationIndex + index, timeIndex)
-            }
-            style={day.style}
-          />
-        ))}
-      {/* template days */}
-      {showTemplates &&
-        templatesToShow?.map((templateDay, index) => (
-          <ScheduleTableItemGroup
-            key={index}
-            onChange={(timeIndex: number, time: string) =>
-              onTimeChange(index, timeIndex, time)
-            }
-            day={templateDay}
-            onAddEntryClick={() => onAddEntryClick(paginationIndex + index)}
-            onRemoveEntryClick={(timeIndex: number) =>
-              onRemoveEntryClick(paginationIndex + index, timeIndex)
-            }
-            style={templateDay.style}
-          />
-        ))}
+    <div className="flex [&>*:last-child]:mr-0">
+      {displayDays?.length === 0 && <ScheduleTableItemGroupDummy />}
+      {displayDays.map((day, index) => (
+        <ScheduleTableItemGroup
+          key={index}
+          day={day}
+          onAddEntryClick={onAddEntryClick(index)}
+          onRemoveEntryClick={onRemoveEntryClick(index)}
+          onUpdateEntryClick={onUpdateEntryClick(index)}
+          style={day.style}
+        />
+      ))}
     </div>
   );
 };
+
+const ScheduleTableItemGroupDummy = () => (
+  <ScheduleTableItemGroup
+    day={{ weekday: "template", times: [], date: 0 }}
+    onUpdateEntryClick={noop}
+    onAddEntryClick={noop}
+    onRemoveEntryClick={noop}
+    isPlaceHolder
+  />
+);
 
 export default WeeklyScheduleTableGroup;

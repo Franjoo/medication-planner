@@ -1,17 +1,17 @@
 import { format } from "date-fns";
+import { Day } from "./models";
 
 export const toGermanDateString = (date: Date) => format(date, "dd.MM.yyyy");
 
 export const toIsoDateString = (date: Date) => format(date, "yyyy-MM-dd"); // ISO 8601
 
-export const last = <T>(array: T[]) => {
-  if (!array.length) return;
-  return array[array.length - 1];
-};
-
-export const first = <T>(array: T[]) => {
-  if (!array.length) return;
-  return array[0];
+export const emptyDay = (date: Date): Day => {
+  return {
+    date: date.getTime(),
+    weekday: format(date, "EEEE"),
+    times: [],
+    style: "secondary",
+  };
 };
 
 export const clamp = (value: number, min: number, max: number) => {

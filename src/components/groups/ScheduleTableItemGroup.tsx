@@ -5,10 +5,13 @@ import { toGermanDateString } from "../../utils";
 import AddTimeEntry from "../atoms/AddTimeEntry";
 import { useState } from "react";
 import clsx from "clsx";
+import { MAX_TIME_ENTRIES_PER_DAY } from "../../constants";
+import { observer } from "mobx-react";
+import { useStore } from "../../hooks/useStores";
 
 interface Props {
   day: Day;
-  onChange: (timeIndex: number, newValue: string) => void;
+  onUpdateEntryClick: (timeIndex: number, newValue: string) => void;
   onAddEntryClick: () => void;
   onRemoveEntryClick: (timeIndex: number) => void;
   isPlaceHolder?: boolean;
@@ -17,13 +20,17 @@ interface Props {
 
 const ScheduleTableItemGroup = ({
   day,
-  onChange,
+  onUpdateEntryClick,
   onAddEntryClick,
   onRemoveEntryClick,
   isPlaceHolder = false,
   style,
 }: Props) => {
   const [hovered, setHovered] = useState(false);
+  const isBeforeTime = (day: Day, index: number) => {
+    if (index === 0) return false;
+    return parseInt(day.times[index - 1]) > parseInt(day.times[index]);
+  };
 
   return (
     <div
@@ -43,16 +50,15 @@ const ScheduleTableItemGroup = ({
       >
         {day.times.map((value, index) => (
           <TimeInputCellGroup
-            onChange={(time: string) => onChange(index, time)}
+            onChange={(time: string) => onUpdateEntryClick(index, time)}
             key={index}
             value={value}
             onRemoveTimeClick={() => onRemoveEntryClick(index)}
             onAddTimeClick={() => onAddEntryClick()}
-            style={style}
+            style={isBeforeTime(day, index) ? "error" : style}
           />
         ))}
-        {/* todo check which type to use */}
-        {hovered && day.times.length < 5 && (
+        {hovered && day.times.length < MAX_TIME_ENTRIES_PER_DAY && (
           <AddTimeEntry onClick={() => onAddEntryClick()} />
         )}
       </div>

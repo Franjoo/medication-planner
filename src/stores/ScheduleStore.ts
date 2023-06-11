@@ -1,23 +1,28 @@
-import { makeAutoObservable, reaction } from "mobx";
+import { makeAutoObservable, reaction, toJS } from "mobx";
 import { Day } from "../models";
 
 import differenceInDays from "date-fns/differenceInDays";
 import addDays from "date-fns/addDays";
 import subDays from "date-fns/subDays";
 import isBefore from "date-fns/isBefore";
-import { format } from "date-fns";
-import { deepClone, localTimeString, weekday } from "../utils";
+import { clamp, deepClone, emptyDay, localTimeString, weekday } from "../utils";
+import {
+  MAX_ITEMS_PER_PAGE,
+  MAX_STEPS_PER_NAVIGATION,
+  MAX_TIME_ENTRIES_PER_DAY,
+} from "../constants";
 
 export class ScheduleStore {
   rangeStart?: Date;
   rangeEnd?: Date;
   days: Day[] = [];
-  showTemplates = false;
+  autoDays: Day[] = [];
+  showAutoCompletes = false;
   sent = false;
-
-  private DAYS_TO_DISPLAY = 7;
-  index = 0;
-  private autoCompleted = false;
+  firstItemIndex = 0;
+  autoCompleted = false;
+  autoCompleteReady = false;
+  incorrects: Map<number, Set<number>> = new Map();
 
   constructor() {
     makeAutoObservable(this);
@@ -39,7 +44,7 @@ export class ScheduleStore {
     });
     // API.postSchedule(data)
     this.sent = true;
-    console.info("---> schedule created\n\n", data);
+    console.info("-> schedule created\n\n", data);
   }
 
   setRangeStart(start: Date) {
@@ -57,7 +62,7 @@ export class ScheduleStore {
     this.rangeEnd = end;
   }
 
-  private updateSchedule() {
+  private updateDateRange() {
     if (!this.rangeStart || !this.rangeEnd) return;
     if (!this.days.length) this.resetTimesAndAutoComplete();
 
@@ -82,74 +87,15 @@ export class ScheduleStore {
         );
       }
     }
+
+    this.sanitizeFirstItemIndex();
   }
 
-  addTimeEntry(dayIndex: number) {
-    const updatedDays = [...this.days];
-    if (updatedDays[dayIndex].times.length >= 5) return;
-    updatedDays[dayIndex].times.push("08:00");
-    this.days = updatedDays;
-  }
-
-  removeTimeEntry(dayIndex: number, timeIndex: number) {
-    const updatedDays = [...this.days];
-    updatedDays[dayIndex].times.splice(timeIndex, 1);
-    this.days = updatedDays;
-  }
-
-  updateTimeEntry(dayIndex: number, timeIndex: number, time: string) {
-    this.days[dayIndex].times[timeIndex] = time;
-  }
-
-  private createEmptyDays(startDate: Date, endDate: Date) {
-    const daysCount = -differenceInDays(startDate, endDate) + 1;
-    const days: Day[] = [];
-    for (let i = 0; i < daysCount; i++) {
-      const date = addDays(startDate, i);
-      days.push({
-        date: date.getTime(),
-        weekday: format(date, "EEEE"),
-        times: [],
-        style: "secondary",
-      });
+  private updateAutoDays() {
+    if (this.autoCompleteReady) return;
+    if (this.templateLength == 0 || this.templateLength == this.days.length) {
+      return;
     }
-    return days;
-  }
-
-  next() {
-    this.index = Math.min(
-      this.index + this.DAYS_TO_DISPLAY,
-      this.days.length - this.DAYS_TO_DISPLAY
-    );
-  }
-
-  previous() {
-    this.index = Math.max(0, this.index - this.DAYS_TO_DISPLAY);
-  }
-
-  get daysCount() {
-    return this.days?.length || 0;
-  }
-
-  get scrollProgress() {
-    return this.index / (this.days.length - this.DAYS_TO_DISPLAY);
-  }
-
-  setShowTemplates(show: boolean) {
-    this.showTemplates = show;
-  }
-
-  autoComplete() {
-    if (!this.templateDays) return;
-    this.days = this.templateDays.map((value) => {
-      return { ...value, style: "primary" };
-    });
-    this.autoCompleted = true;
-    this.showTemplates = false;
-  }
-
-  get templateDays() {
-    if (!this.showTemplates) return;
 
     const fromIndex = 0;
     const toIndex = this.templateLength;
@@ -165,7 +111,98 @@ export class ScheduleStore {
       timeTemplateIndex++;
     }
 
-    return daysClone;
+    this.autoDays = daysClone.slice();
+    this.autoCompleteReady = true;
+  }
+
+  autoComplete() {
+    if (!this.autoDays) return;
+    this.days = this.autoDays.map((value) => {
+      return { ...value, style: "primary" };
+    });
+    this.showAutoCompletes = false;
+  }
+
+  setShowAutoCompletes(show: boolean) {
+    if (!this.autoCompleteReady) {
+      this.updateAutoDays();
+    }
+    this.showAutoCompletes = show;
+  }
+
+  addTimeEntry(dayIndex: number) {
+    const updatedDays = [...this.days];
+    if (updatedDays[dayIndex].times.length >= MAX_TIME_ENTRIES_PER_DAY) return;
+    updatedDays[dayIndex].times.push("08:00");
+    this.days = updatedDays;
+  }
+
+  removeTimeEntry(dayIndex: number, timeIndex: number) {
+    const updatedDays = [...this.days];
+    updatedDays[dayIndex].times.splice(timeIndex, 1);
+    this.days = updatedDays;
+    this.updateIncorrectEntries(dayIndex, timeIndex);
+  }
+
+  updateTimeEntry(dayIndex: number, timeIndex: number, time: string) {
+    this.days[dayIndex].times[timeIndex] = time;
+    this.updateIncorrectEntries(dayIndex, timeIndex);
+  }
+
+  updateIncorrectEntries(dayIndex: number, timeIndex: number) {
+    if (timeIndex === 0) return;
+    const before = this.days[dayIndex].times[timeIndex - 1];
+    const current = this.days[dayIndex].times[timeIndex];
+
+    const set = this.incorrects.get(dayIndex) || new Set();
+    if (parseInt(current) < parseInt(before)) {
+      set.add(timeIndex);
+    } else {
+      set.delete(timeIndex);
+      if (set.size === 0) this.incorrects.delete(dayIndex);
+    }
+    this.incorrects.set(dayIndex, set);
+  }
+
+  private createEmptyDays(startDate: Date, endDate: Date) {
+    const daysCount = -differenceInDays(startDate, endDate) + 1;
+    const days: Day[] = [];
+    for (let i = 0; i < daysCount; i++) {
+      const date = addDays(startDate, i);
+      days.push(emptyDay(date));
+    }
+    return days;
+  }
+
+  next() {
+    this.firstItemIndex = this.firstItemIndex + MAX_STEPS_PER_NAVIGATION;
+    this.sanitizeFirstItemIndex();
+  }
+
+  previous() {
+    this.firstItemIndex = this.firstItemIndex - MAX_STEPS_PER_NAVIGATION;
+    this.sanitizeFirstItemIndex();
+  }
+
+  private sanitizeFirstItemIndex() {
+    if (
+      this.firstItemIndex < 0 ||
+      this.firstItemIndex > this.days.length - MAX_ITEMS_PER_PAGE
+    ) {
+      this.firstItemIndex = clamp(
+        this.firstItemIndex + MAX_STEPS_PER_NAVIGATION,
+        0,
+        this.days.length - MAX_ITEMS_PER_PAGE
+      );
+    }
+  }
+
+  get paginationProgress() {
+    return this.firstItemIndex / (this.days.length - MAX_ITEMS_PER_PAGE);
+  }
+
+  get daysCount() {
+    return this.days?.length || 0;
   }
 
   get templateLength() {
@@ -173,20 +210,19 @@ export class ScheduleStore {
   }
 
   get canGoForward() {
-    return this.days.length - this.index > this.DAYS_TO_DISPLAY;
+    return this.days.length - this.firstItemIndex > MAX_ITEMS_PER_PAGE;
   }
 
   get canGoBackward() {
-    return this.index > 0;
+    return this.firstItemIndex > 0;
   }
 
   private toShifted(days: Day[], numDays: number) {
-    const shifted = days.slice();
-    shifted.forEach((dayDate) => {
-      dayDate.date = subDays(dayDate.date, numDays).getTime();
-      dayDate.weekday = weekday(dayDate.date);
-    });
-    return shifted;
+    return days.slice().map((value) => ({
+      ...value,
+      date: subDays(value.date, numDays).getTime(),
+      weekday: weekday(value.date),
+    }));
   }
 
   resetTimesAndAutoComplete() {
@@ -195,38 +231,22 @@ export class ScheduleStore {
     this.autoCompleted = false;
   }
 
+  resetSentStatus() {
+    this.sent = false;
+  }
+
   clearDays() {
     this.days = [];
-  }
-
-  get resetEnabled() {
-    return (
-      this.days.length > 0 &&
-      !!this.days.find((value) => value.times.length > 0)
-    );
-  }
-
-  get uploadEnabled() {
-    return (
-      this.days.length > 0 &&
-      !this.days.find((value) => value.times.length === 0)
-    );
-  }
-
-  get autoCompleteEnabled() {
-    return (
-      this.days.length > 0 &&
-      this.days[0].times.length > 0 &&
-      !this.autoCompleted &&
-      !!this.days.find((value) => value.times.length === 0) &&
-      !!this.days.find((value) => value.times.length > 0)
-    );
   }
 
   initReactions() {
     reaction(
       () => [this.rangeStart, this.rangeEnd],
-      () => this.updateSchedule()
+      () => this.updateDateRange()
+    );
+    reaction(
+      () => [this.days],
+      () => (this.autoCompleteReady = false)
     );
   }
 }
