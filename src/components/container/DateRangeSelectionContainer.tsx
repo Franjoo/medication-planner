@@ -2,14 +2,16 @@ import { useStore } from "../../hooks/useStores";
 import { observer } from "mobx-react";
 import DateRangeSelectionGroup from "../groups/DateRangeSelectionGroup";
 import { useEffect } from "react";
+import { KEY_LEFT, KEY_RIGHT } from "../../constants";
 
 const DateRangeSelectionContainer = observer(() => {
   const { schedule } = useStore();
 
   useEffect(() => {
     const keyListener = (event: KeyboardEvent) => {
-      if (event.key === "ArrowLeft") schedule.previous();
-      if (event.key === "ArrowRight") schedule.next();
+      if (event.key === KEY_LEFT) schedule.previous();
+      if (event.key === KEY_RIGHT) schedule.next();
+      event.stopPropagation();
     };
 
     document.addEventListener("keyup", keyListener);
