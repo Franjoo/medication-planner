@@ -5,4 +5,4 @@ export interface Day {
   style?: Style;
 }
 
-export type Style = "primary" | "secondary" | "disabled";
+export type Style = "primary" | "secondary" | "disabled" | "error";

@@ -23,6 +23,7 @@ const Cell = ({
       { "border-black text-black": style === "primary" },
       { "border-pink text-pink": style === "secondary" },
       { "border-grey-AC text-grey-AC": style === "disabled" },
+      { "border-red-600 text-red-600": style === "error" },
       className
     )}
     onMouseEnter={onMouseEnter}

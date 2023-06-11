@@ -1,4 +1,4 @@
-import { makeAutoObservable, reaction } from "mobx";
+import { makeAutoObservable, reaction, toJS } from "mobx";
 import { Day } from "../models";
 
 import differenceInDays from "date-fns/differenceInDays";
@@ -22,6 +22,7 @@ export class ScheduleStore {
   firstItemIndex = 0;
   autoCompleted = false;
   autoCompleteReady = false;
+  incorrects: Map<number, Set<number>> = new Map();
 
   constructor() {
     makeAutoObservable(this);
@@ -140,10 +141,27 @@ export class ScheduleStore {
     const updatedDays = [...this.days];
     updatedDays[dayIndex].times.splice(timeIndex, 1);
     this.days = updatedDays;
+    this.updateIncorrectEntries(dayIndex, timeIndex);
   }
 
   updateTimeEntry(dayIndex: number, timeIndex: number, time: string) {
     this.days[dayIndex].times[timeIndex] = time;
+    this.updateIncorrectEntries(dayIndex, timeIndex);
+  }
+
+  updateIncorrectEntries(dayIndex: number, timeIndex: number) {
+    if (timeIndex === 0) return;
+    const before = this.days[dayIndex].times[timeIndex - 1];
+    const current = this.days[dayIndex].times[timeIndex];
+
+    const set = this.incorrects.get(dayIndex) || new Set();
+    if (parseInt(current) < parseInt(before)) {
+      set.add(timeIndex);
+    } else {
+      set.delete(timeIndex);
+      if (set.size === 0) this.incorrects.delete(dayIndex);
+    }
+    this.incorrects.set(dayIndex, set);
   }
 
   private createEmptyDays(startDate: Date, endDate: Date) {

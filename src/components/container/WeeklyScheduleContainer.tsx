@@ -28,6 +28,8 @@ const WeeklyScheduleContainer = observer(() => {
   const onAddEntryClick = (dayIndex: number) => schedule.addTimeEntry(dayIndex);
   const onRemoveEntryClick = (dayIndex: number, timeIndex: number) =>
     schedule.removeTimeEntry(dayIndex, timeIndex);
+  const onUpdateEntry = (dayIndex: number, timeIndex: number, time: string) =>
+    schedule.updateTimeEntry(dayIndex, timeIndex, time);
 
   const scrollbarSize = clamp(schedule.days.length / 100, 0, 1);
   const scrollbarEnabled = schedule.canGoBackward || schedule.canGoForward;
@@ -40,7 +42,7 @@ const WeeklyScheduleContainer = observer(() => {
         showAutoCompletes={schedule.showAutoCompletes}
         onAddEntry={onAddEntryClick}
         onRemoveEntry={onRemoveEntryClick}
-        onUpdateEntry={schedule.updateTimeEntry}
+        onUpdateEntry={onUpdateEntry}
       />
       <AutoCompleteBlocks
         showAutoCompletes={schedule.showAutoCompletes}
@@ -48,7 +50,7 @@ const WeeklyScheduleContainer = observer(() => {
         firstItemIndex={schedule.firstItemIndex}
         days={schedule.days}
       />
-      <Spacer height={40} block />
+      <Spacer height={20} block />
       {scrollbarEnabled && (
         <Scrollbar
           progress={schedule.paginationProgress}

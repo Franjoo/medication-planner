@@ -6,6 +6,8 @@ import AddTimeEntry from "../atoms/AddTimeEntry";
 import { useState } from "react";
 import clsx from "clsx";
 import { MAX_TIME_ENTRIES_PER_DAY } from "../../constants";
+import { observer } from "mobx-react";
+import { useStore } from "../../hooks/useStores";
 
 interface Props {
   day: Day;
@@ -25,6 +27,10 @@ const ScheduleTableItemGroup = ({
   style,
 }: Props) => {
   const [hovered, setHovered] = useState(false);
+  const isBeforeTime = (day: Day, index: number) => {
+    if (index === 0) return false;
+    return parseInt(day.times[index - 1]) > parseInt(day.times[index]);
+  };
 
   return (
     <div
@@ -49,7 +55,7 @@ const ScheduleTableItemGroup = ({
             value={value}
             onRemoveTimeClick={() => onRemoveEntryClick(index)}
             onAddTimeClick={() => onAddEntryClick()}
-            style={style}
+            style={isBeforeTime(day, index) ? "error" : style}
           />
         ))}
         {hovered && day.times.length < MAX_TIME_ENTRIES_PER_DAY && (
