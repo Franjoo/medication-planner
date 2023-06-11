@@ -1,5 +1,5 @@
 import React from "react";
-import { lerp } from "../../utils";
+import { clamp, lerp } from "../../utils";
 import useMeasure from "react-use-measure";
 
 interface Props {
@@ -10,7 +10,11 @@ interface Props {
 const Scrollbar = ({ progress, size }: Props) => {
   const [ref, bounds] = useMeasure();
 
-  const width = lerp(bounds.width * 0.1, bounds.width * 0.95, 1 - size);
+  const width = lerp(
+    bounds.width * 0.1,
+    bounds.width * 0.95,
+    clamp(1 - size, 0, 1)
+  );
   const translateX = (bounds.width - width) * progress;
 
   return (
