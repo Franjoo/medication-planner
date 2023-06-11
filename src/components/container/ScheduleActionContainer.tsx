@@ -11,11 +11,11 @@ const ScheduleActionContainer = observer(() => {
   };
   const onAutoCompleteMouseEnter = () => {
     if (!schedule.autoCompleteEnabled) return;
-    schedule.setShowTemplates(true);
+    schedule.setShowAutoCompletes(true);
   };
   const onAutoCompleteMouseLeave = () => {
     if (!schedule.autoCompleteEnabled) return;
-    schedule.setShowTemplates(false);
+    schedule.setShowAutoCompletes(false);
   };
 
   const onUpload = () => schedule.send();

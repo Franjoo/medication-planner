@@ -7,17 +7,18 @@ import subDays from "date-fns/subDays";
 import isBefore from "date-fns/isBefore";
 import { format } from "date-fns";
 import { deepClone, localTimeString, weekday } from "../utils";
+import { MAX_ITEMS_PER_PAGE, MAX_TIME_ENTRIES_PER_DAY } from "../constants";
 
 export class ScheduleStore {
   rangeStart?: Date;
   rangeEnd?: Date;
   days: Day[] = [];
-  showTemplates = false;
+  autoDays: Day[] = [];
+  showAutoCompletes = false;
   sent = false;
-
-  private DAYS_TO_DISPLAY = 7;
-  index = 0;
-  private autoCompleted = false;
+  firstItemIndex = 0;
+  autoCompleted = false;
+  private autoCompleteReady = false;
 
   constructor() {
     makeAutoObservable(this);
@@ -57,7 +58,40 @@ export class ScheduleStore {
     this.rangeEnd = end;
   }
 
-  private updateSchedule() {
+  autoComplete() {
+    if (!this.autoDays) return;
+    this.days = this.autoDays.map((value) => {
+      return { ...value, style: "primary" };
+    });
+    this.showAutoCompletes = false;
+  }
+
+  updateAutoDays() {
+    if (this.autoCompleteReady) return;
+    if (this.templateLength == 0 || this.templateLength == this.days.length) {
+      return;
+    }
+
+    const fromIndex = 0;
+    const toIndex = this.templateLength;
+    const daysClone = deepClone(this.days);
+    const template = daysClone.slice(fromIndex, toIndex);
+    const clonedTimes = template.map((value) => value.times);
+
+    let timeTemplateIndex = 0;
+    for (let i = toIndex; i < daysClone.length; i++) {
+      timeTemplateIndex %= clonedTimes.length;
+      daysClone[i].times.push(...clonedTimes[timeTemplateIndex]);
+      daysClone[i].style = "disabled";
+      timeTemplateIndex++;
+    }
+
+    console.log("update autoComplete");
+    this.autoDays = daysClone.slice();
+    this.autoCompleteReady = true;
+  }
+
+  private updateDateRange() {
     if (!this.rangeStart || !this.rangeEnd) return;
     if (!this.days.length) this.resetTimesAndAutoComplete();
 
@@ -86,7 +120,7 @@ export class ScheduleStore {
 
   addTimeEntry(dayIndex: number) {
     const updatedDays = [...this.days];
-    if (updatedDays[dayIndex].times.length >= 5) return;
+    if (updatedDays[dayIndex].times.length >= MAX_TIME_ENTRIES_PER_DAY) return;
     updatedDays[dayIndex].times.push("08:00");
     this.days = updatedDays;
   }
@@ -117,14 +151,14 @@ export class ScheduleStore {
   }
 
   next() {
-    this.index = Math.min(
-      this.index + this.DAYS_TO_DISPLAY,
-      this.days.length - this.DAYS_TO_DISPLAY
+    this.firstItemIndex = Math.min(
+      this.firstItemIndex + MAX_ITEMS_PER_PAGE,
+      this.days.length - MAX_ITEMS_PER_PAGE
     );
   }
 
   previous() {
-    this.index = Math.max(0, this.index - this.DAYS_TO_DISPLAY);
+    this.firstItemIndex = Math.max(0, this.firstItemIndex - MAX_ITEMS_PER_PAGE);
   }
 
   get daysCount() {
@@ -132,40 +166,14 @@ export class ScheduleStore {
   }
 
   get scrollProgress() {
-    return this.index / (this.days.length - this.DAYS_TO_DISPLAY);
+    return this.firstItemIndex / (this.days.length - MAX_ITEMS_PER_PAGE);
   }
 
-  setShowTemplates(show: boolean) {
-    this.showTemplates = show;
-  }
-
-  autoComplete() {
-    if (!this.templateDays) return;
-    this.days = this.templateDays.map((value) => {
-      return { ...value, style: "primary" };
-    });
-    this.autoCompleted = true;
-    this.showTemplates = false;
-  }
-
-  get templateDays() {
-    if (!this.showTemplates) return;
-
-    const fromIndex = 0;
-    const toIndex = this.templateLength;
-    const daysClone = deepClone(this.days);
-    const template = daysClone.slice(fromIndex, toIndex);
-    const clonedTimes = template.map((value) => value.times);
-
-    let timeTemplateIndex = 0;
-    for (let i = toIndex; i < daysClone.length; i++) {
-      timeTemplateIndex %= clonedTimes.length;
-      daysClone[i].times.push(...clonedTimes[timeTemplateIndex]);
-      daysClone[i].style = "disabled";
-      timeTemplateIndex++;
+  setShowAutoCompletes(show: boolean) {
+    if (!this.autoCompleteReady) {
+      this.updateAutoDays();
     }
-
-    return daysClone;
+    this.showAutoCompletes = show;
   }
 
   get templateLength() {
@@ -173,11 +181,11 @@ export class ScheduleStore {
   }
 
   get canGoForward() {
-    return this.days.length - this.index > this.DAYS_TO_DISPLAY;
+    return this.days.length - this.firstItemIndex > MAX_ITEMS_PER_PAGE;
   }
 
   get canGoBackward() {
-    return this.index > 0;
+    return this.firstItemIndex > 0;
   }
 
   private toShifted(days: Day[], numDays: number) {
@@ -226,7 +234,11 @@ export class ScheduleStore {
   initReactions() {
     reaction(
       () => [this.rangeStart, this.rangeEnd],
-      () => this.updateSchedule()
+      () => this.updateDateRange()
+    );
+    reaction(
+      () => [this.days],
+      () => (this.autoCompleteReady = false)
     );
   }
 }

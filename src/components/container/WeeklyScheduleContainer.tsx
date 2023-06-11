@@ -3,6 +3,7 @@ import { useStore } from "../../hooks/useStores";
 import { observer } from "mobx-react";
 import Scrollbar from "../atoms/Scrollbar";
 import { clamp } from "../../utils";
+import TemplateItemGroup from "../groups/TemplateItemGroup";
 
 const WeeklyScheduleContainer = observer(() => {
   const { schedule } = useStore();
@@ -23,12 +24,17 @@ const WeeklyScheduleContainer = observer(() => {
     <>
       <WeeklyScheduleTableGroup
         days={schedule.days}
-        templateDays={schedule.templateDays}
-        paginationIndex={schedule.index}
-        showTemplates={schedule.showTemplates}
+        templateDays={schedule.autoDays}
+        paginationIndex={schedule.firstItemIndex}
+        showTemplates={schedule.showAutoCompletes}
         onAddEntryClick={onAddEntry}
         onRemoveEntryClick={onRemoveEntry}
         onTimeChange={onUpdateEntry}
+      />
+      <TemplateItemGroup
+        templateLength={schedule.templateLength}
+        paginationIndex={schedule.firstItemIndex}
+        days={schedule.days}
       />
       {scrollbarEnabled && (
         <Scrollbar progress={scrollbarProgress} size={scrollbarSize} />

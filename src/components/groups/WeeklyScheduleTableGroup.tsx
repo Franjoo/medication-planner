@@ -38,20 +38,9 @@ const WeeklyScheduleTableGroup = ({
   );
 
   return (
-    <div className="mb-20 flex [&>*:last-child]:mr-0">
-      {/* height placeholder */}
-      {!daysToShow ||
-        (daysToShow.length === 0 && (
-          <ScheduleTableItemGroup
-            day={{ weekday: "template", times: [], date: 0 }}
-            onChange={(timeIndex: number, time: string) =>
-              onTimeChange(0, timeIndex, time)
-            }
-            onAddEntryClick={noop}
-            onRemoveEntryClick={noop}
-            isPlaceHolder
-          />
-        ))}
+    // <div className="mb-20 flex [&>*:last-child]:mr-0">
+    <div className="flex [&>*:last-child]:mr-0">
+      {daysToShow?.length === 0 && <ScheduleTableItemGroupDummy />}
       {/* user created days */}
       {!showTemplates &&
         daysToShow?.map((day, index) => (
@@ -87,5 +76,15 @@ const WeeklyScheduleTableGroup = ({
     </div>
   );
 };
+
+const ScheduleTableItemGroupDummy = () => (
+  <ScheduleTableItemGroup
+    day={{ weekday: "template", times: [], date: 0 }}
+    onChange={noop}
+    onAddEntryClick={noop}
+    onRemoveEntryClick={noop}
+    isPlaceHolder
+  />
+);
 
 export default WeeklyScheduleTableGroup;
